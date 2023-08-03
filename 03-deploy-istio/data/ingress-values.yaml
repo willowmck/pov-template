@@ -1,0 +1,22 @@
+name: istio-ingressgateway-1-16
+global:
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.16.4-solo
+labels:
+  app: gloo-gateway
+service:
+  type: ClusterIP
+  ports:
+  # Port for health checks on path /healthz/ready.
+  # For AWS ELBs, this port must be listed first.
+  - name: status-port
+    port: 15021
+    targetPort: 15021
+  # main http ingress port
+  - port: 80
+    targetPort: 8080
+    name: http2
+  # main https ingress port
+  - port: 443
+    targetPort: 8443
+    name: https

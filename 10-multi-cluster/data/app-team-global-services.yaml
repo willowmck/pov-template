@@ -1,0 +1,79 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: currency
+spec:
+  hosts:
+  - currency.app-team.demo.example.com
+  services:
+  - labels:
+      app: currencyservice
+  ports:
+  - number: 80
+    protocol: GRPC
+    targetPort:
+      name: grpc
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: product-catalog
+spec:
+  hosts:
+  - product-catalog.app-team.demo.example.com
+  services:
+  - labels:
+      app: productcatalogservice
+  ports:
+  - number: 80
+    protocol: GRPC
+    targetPort:
+      name: grpc
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: cart
+spec:
+  hosts:
+  - cart.app-team.demo.example.com
+  services:
+  - labels:
+      app: cartservice
+  ports:
+  - number: 80
+    protocol: GRPC
+    targetPort:
+      name: grpc
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: recommendations
+spec:
+  hosts:
+  - recommendations.app-team.demo.example.com
+  services:
+  - labels:
+      app: recommendationservice
+  ports:
+  - number: 80
+    protocol: GRPC
+    targetPort:
+      name: grpc
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualDestination
+metadata:
+  name: email
+spec:
+  hosts:
+  - email.app-team.demo.example.com
+  services:
+  - labels:
+      app: emailservice
+  ports:
+  - number: 80
+    protocol: GRPC
+    targetPort:
+      name: grpc
