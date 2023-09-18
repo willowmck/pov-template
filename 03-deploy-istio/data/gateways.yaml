@@ -6,10 +6,10 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - gatewayRevision: 1-16
+    - gatewayRevision: 1-18
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: management
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: true
       istioOperatorSpec:
@@ -19,7 +19,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.16.4-solo
+        tag: 1.18.1-solo
         values:
           gateways:
             istio-ingressgateway:
@@ -35,7 +35,7 @@ spec:
               enabled: true
               label:
                 app: gloo-gateway
-                revision: 1-16
+                revision: 1-18
               k8s:
                   serviceAnnotations:
                     service.beta.kubernetes.io/aws-load-balancer-type: "external"
@@ -67,13 +67,16 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - gatewayRevision: 1-16
+    - gatewayRevision: 1-18
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: web
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: true
-      - name: cluster-2
+      - name: lob-01
+        # If set to true, the spec for this revision is applied in the cluster
+        activeGateway: true
+      - name: lob-02
         activeGateway: true
       istioOperatorSpec:
         # No control plane components are installed
@@ -82,7 +85,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.16.4-solo
+        tag: 1.18.1-solo
         components:
           ingressGateways:
           # Enable the default east-west gateway
@@ -92,7 +95,7 @@ spec:
               enabled: true
               label:
                 app: gloo-internal-gateway
-                revision: 1-16
+                revision: 1-18
                 topology.istio.io/network: istio-network
               k8s:
                   serviceAnnotations:

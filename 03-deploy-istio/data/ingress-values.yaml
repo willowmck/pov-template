@@ -1,7 +1,7 @@
-name: istio-ingressgateway-1-16
+name: istio-ingressgateway-1-18
 global:
   hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
-  tag: 1.16.4-solo
+  tag: 1.18.1-solo
 labels:
   app: gloo-gateway
 service:

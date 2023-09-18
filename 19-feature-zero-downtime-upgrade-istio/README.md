@@ -10,24 +10,24 @@ Links:
 - [Gloo Platform Managed Istio](https://docs.solo.io/gloo-mesh-enterprise/latest/setup/installation/istio/gm_managed_istio/)
 - [GatewayLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/gateway_lifecycle_manager/)
 - [IstioLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/istio_lifecycle_manager/)
-## Upgrade Istio using Helm in Cluster: cluster-1
+## Upgrade Istio using Helm in Cluster: lob-01
 
 * To upgrade Istio we will deploy a whole new canary version beside it. We will also deploy new gateways and migrate traffic to them.
 
 ```shell
 helm upgrade --install istio-base istio/base \
   -n istio-system \
-  --kube-context=cluster-1 \
-  --version 1.17.2 \
-  --set defaultRevision=1-17
+  --kube-context=lob-01 \
+  --version 1.18.2 \
+  --set defaultRevision=1-18
 
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
-  --version 1.17.2 \
+helm upgrade -i istiod-1-18 istio/istiod \
+  --set revision=1-18 \
+  --version 1.18.2 \
   --namespace istio-system  \
-  --kube-context=cluster-1 \
-  --set "global.multiCluster.clusterName=cluster-1" \
-  --set "meshConfig.trustDomain=cluster-1" \
+  --kube-context=lob-01 \
+  --set "global.multiCluster.clusterName=lob-01" \
+  --set "meshConfig.trustDomain=lob-01" \
   -f data/istiod-values.yaml
 ```
 
@@ -36,26 +36,26 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.2 \
+  --set revision=1-18 \
+  --version 1.18.2 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-1 \
+  --kube-context=lob-01 \
   -f data/eastwest-values.yaml
 ```
 
-* Deploy new Istio 1-17 ingress gateway using revisions
+* Deploy new Istio 1-18 ingress gateway using revisions
 ```shell
-helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.2 \
+helm upgrade -i istio-ingressgateway-1-18 istio/gateway \
+  --set revision=1-18 \
+  --version 1.18.2 \
   --namespace istio-ingress  \
-  --kube-context=cluster-1 \
+  --kube-context=lob-01 \
   -f data/ingress-values.yaml
 ```
 
 * Update the standalone Kubernetes service send traffic to the new Istio ingressgateway.
 ```shell
-kubectl apply --context cluster-1 -f - <<EOF
+kubectl apply --context lob-01 -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -70,7 +70,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    istio: ingressgateway-1-17
+    istio: ingressgateway-1-18
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.
@@ -90,45 +90,45 @@ EOF
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context cluster-1 -n online-boutique
-kubectl rollout restart deploy --context cluster-1 -n online-boutique
-kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context cluster-1 -n online-boutique
-kubectl rollout restart deploy --context cluster-1 -n gloo-platform-addons
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context lob-01 -n online-boutique
+kubectl rollout restart deploy --context lob-01 -n online-boutique
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-18 --context lob-01 -n online-boutique
+kubectl rollout restart deploy --context lob-01 -n gloo-platform-addons
 ```
 
 * Remove Istio 
 ```shell
 helm uninstall istio-ingressgateway-1-16 \
   --namespace istio-ingress  \
-  --kube-context=cluster-1
+  --kube-context=lob-01
 
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=cluster-1
+  --kube-context=lob-01
 ```
 
-* Verify only Istio 1-17 is running
+* Verify only Istio 1-18 is running
 ```shell
-istioctl proxy-status --context cluster-1
+istioctl proxy-status --context lob-01
 ```
 
-## Upgrade Istio using Helm in Cluster: cluster-2
+## Upgrade Istio using Helm in Cluster: lob-02
 
-* Upgrade Istiod to 1-17 components
+* Upgrade Istiod to 1-18 components
 ```shell
 helm upgrade --install istio-base istio/base \
-  --kube-context=cluster-2 \
+  --kube-context=lob-02 \
   -n istio-system \
-  --version 1.17.2 \
-  --set defaultRevision=1-17
+  --version 1.18.2 \
+  --set defaultRevision=1-18
 
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
-  --version 1.17.2 \
+helm upgrade -i istiod-1-18 istio/istiod \
+  --set revision=1-18 \
+  --version 1.18.2 \
   --namespace istio-system  \
-  --kube-context=cluster-2 \
-  --set "global.multiCluster.clusterName=cluster-2" \
-  --set "meshConfig.trustDomain=cluster-2" \
+  --kube-context=lob-02 \
+  --set "global.multiCluster.clusterName=lob-02" \
+  --set "meshConfig.trustDomain=lob-02" \
   -f data/istiod-values.yaml
 
 ```
@@ -136,32 +136,32 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.2 \
+  --set revision=1-18 \
+  --version 1.18.2 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-2 \
+  --kube-context=lob-02 \
   -f data/eastwest-values.yaml
 ```
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context cluster-2 -n online-boutique
-kubectl rollout restart deploy --context cluster-2 -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context lob-02 -n online-boutique
+kubectl rollout restart deploy --context lob-02 -n online-boutique
 
-kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context cluster-2 -n checkout-apis
-kubectl rollout restart deploy --context cluster-2 -n checkout-apis
+kubectl label namespace checkout-apis --overwrite istio.io/rev=1-18 --context lob-02 -n checkout-apis
+kubectl rollout restart deploy --context lob-02 -n checkout-apis
 ```
 
 * Remove Istio 
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=cluster-2
+  --kube-context=lob-02
 ```
 
-* Verify only Istio 1-17 is running
+* Verify only Istio 1-18 is running
 ```shell
-istioctl proxy-status --context cluster-2
+istioctl proxy-status --context lob-02
 ```
 
 

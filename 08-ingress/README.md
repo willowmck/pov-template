@@ -27,7 +27,7 @@ spec:
     - selector:
         labels:
           app: gloo-gateway
-        cluster: cluster-1
+        cluster: management
         namespace: istio-ingress
   listeners: 
     # HTTP port
@@ -90,14 +90,14 @@ spec:
           - ref:
               name: frontend
               namespace: online-boutique
-              cluster: cluster-1
+              cluster: management
             port:
               number: 80
 EOF
 ```
 * Access online-boutique
 ```shell
-export GLOO_GATEWAY=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):80
+export GLOO_GATEWAY=$(kubectl --context management -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):80
 
 echo "Online Boutique available at http://$GLOO_GATEWAY"
 ```
@@ -111,7 +111,7 @@ Most users need to secure traffic coming from outside their Kubernetes cluster. 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
    -keyout tls.key -out tls.crt -subj "/CN=*"
 
-kubectl create secret generic tls-secret --from-file=tls.key=tls.key --from-file=tls.crt=tls.crt --context cluster-1 -n istio-ingress
+kubectl create secret generic tls-secret --from-file=tls.key=tls.key --from-file=tls.crt=tls.crt --context management -n istio-ingress
 ```
 
 * Using the `VirtualGateway` API we can update the current configuration to expose traffic on port 443 using TLS.
@@ -127,7 +127,7 @@ spec:
     - selector:
         labels:
           app: gloo-gateway
-        cluster: cluster-1
+        cluster: management
         namespace: istio-ingress
   listeners: 
     # HTTP port
@@ -154,7 +154,7 @@ EOF
 
 * Access online-boutique with HTTPS
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context management -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```

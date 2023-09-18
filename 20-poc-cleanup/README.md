@@ -8,34 +8,34 @@ You have completed the POC! The final step is to clean up the deployed assets an
 
 ## Clean Up Applications
 
-* Remove the Online Boutique Applications in cluster-1
+* Remove the Online Boutique Applications in lob-01
 ```shell
 helm uninstall online-boutique \
   --namespace online-boutique \
-  --kube-context cluster-1
+  --kube-context lob-01
 
 helm uninstall toys-catalog \
   --namespace online-boutique \
-  --kube-context cluster-1
+  --kube-context lob-01
 ```
 
-* Remove the Online Boutique Applications in cluster-2
+* Remove the Online Boutique Applications in lob-02
 ```shell
 helm uninstall ha-frontend \
   --namespace online-boutique \
-  --kube-context cluster-2
+  --kube-context lob-02
 
 helm uninstall checkout-apis \
   --namespace checkout-apis \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
 * Delete the namespaces
 ```shell
-kubectl delete namespace online-boutique --context cluster-1
+kubectl delete namespace online-boutique --context lob-01
 
-kubectl delete namespace online-boutique --context cluster-2
-kubectl delete namespace checkout-apis --context cluster-2
+kubectl delete namespace online-boutique --context lob-02
+kubectl delete namespace checkout-apis --context lob-02
 ```
 
 ## Clean up Gloo Addons
@@ -44,82 +44,82 @@ kubectl delete namespace checkout-apis --context cluster-2
 ```shell
 helm uninstall gloo-platform-addons \
   --namespace gloo-platform-addons \
-  --kube-context cluster-1
+  --kube-context lob-01
 ```
 
 * Delete the Gloo Addons namespace
 ```
-kubectl delete namespace gloo-platform-addons --context cluster-1
+kubectl delete namespace gloo-platform-addons --context lob-01
 ```
 
 ## Clean Up Istio
 
 * Depending on if Istio was upgraded or not, the following commands may need to be modified.
 ```shell
-helm ls -n istio-system --kube-context cluster-1
-helm ls -n istio-ingress --kube-context cluster-1
-helm ls -n istio-eastwest --kube-context cluster-1
+helm ls -n istio-system --kube-context lob-01
+helm ls -n istio-ingress --kube-context lob-01
+helm ls -n istio-eastwest --kube-context lob-01
 
-helm ls -n istio-system --kube-context cluster-2
-helm ls -n istio-eastwest --kube-context cluster-2
+helm ls -n istio-system --kube-context lob-02
+helm ls -n istio-eastwest --kube-context lob-02
 ```
 
-* Uninstall the gateways in cluster-1
+* Uninstall the gateways in lob-01
 ```shell
 helm uninstall istio-eastwestgateway \
   --namespace istio-eastwest \
-  --kube-context cluster-1
+  --kube-context lob-01
 
 helm uninstall istio-ingressgateway-1-16 \
   --namespace istio-ingress \
-  --kube-context cluster-1
+  --kube-context lob-01
 
-helm uninstall istio-ingressgateway-1-17 \
+helm uninstall istio-ingressgateway-1-18 \
   --namespace istio-ingress \
-  --kube-context cluster-1
+  --kube-context lob-01
 ```
 
-* Uninstall the control plane in cluster-1
+* Uninstall the control plane in lob-01
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system \
-  --kube-context cluster-1
+  --kube-context lob-01
 
-helm uninstall istiod-1-17 \
+helm uninstall istiod-1-18 \
   --namespace istio-system \
-  --kube-context cluster-1
+  --kube-context lob-01
 ```
 
-* Uninstall the gateways in cluster-2
+* Uninstall the gateways in lob-02
 ```shell
 helm uninstall istio-eastwestgateway \
   --namespace istio-eastwest \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
-* Uninstall the control plane in cluster-1
+* Uninstall the control plane in lob-01
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system \
-  --kube-context cluster-2
+  --kube-context lob-02
 
-helm uninstall istiod-1-17 \
+helm uninstall istiod-1-18 \
   --namespace istio-system \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
 * Remove the CRDS **NOTE** Make sure other teams are not using Istio on the cluster
 ```shell
-helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context cluster-1 -f -
+helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context lob-01 -f -
 
-helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context cluster-2 -f -
+helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context lob-02 -f -
 ```
 
 * Cleanup the namespaces
 ```shell
-kubectl delete namespace istio-system --context cluster-1
+kubectl delete namespace istio-system --context lob-01
 
-kubectl delete namespace istio-system --context cluster-2
+kubectl delete namespace istio-system --context lob-02
 ```
 
 ## Clean Up Gloo Platform
@@ -128,29 +128,29 @@ kubectl delete namespace istio-system --context cluster-2
 ```shell
 helm uninstall gloo-agent \
   --namespace gloo-mesh \
-  --kube-context cluster-1
+  --kube-context lob-01
 
 helm uninstall gloo-agent \
   --namespace gloo-mesh \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
 * Remove Gloo CRDs
 ```shell
 helm uninstall gloo-platform-crds \
   --namespace gloo-mesh \
-  --kube-context cluster-1
+  --kube-context lob-01
 
 helm uninstall gloo-platform-crds \
   --namespace gloo-mesh \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
 * Delete gloo-mesh namespaces
 ```shell
-kubectl delete namespace gloo-mesh --context cluster-1
+kubectl delete namespace gloo-mesh --context lob-01
 
-kubectl delete namespace gloo-mesh --context cluster-2
+kubectl delete namespace gloo-mesh --context lob-02
 ```
 
 * Remove the Workspace namespaces in management cluster
@@ -184,7 +184,7 @@ kubectl delete namespace gloo-mesh --context management
 
 * Cleanup Keycloak
 ```shell
-kubectl delete namespace keycloak --context cluster-1
+kubectl delete namespace keycloak --context lob-01
 ```
 
 * Cleanup cert-manager
@@ -195,11 +195,11 @@ helm uninstall cert-manager \
 
 helm uninstall cert-manager \
   --namespace cert-manager \
-  --kube-context cluster-1
+  --kube-context lob-01
 
 helm uninstall cert-manager \
   --namespace cert-manager \
-  --kube-context cluster-2
+  --kube-context lob-02
 ```
 
 * Cleanup cert-manager namespace

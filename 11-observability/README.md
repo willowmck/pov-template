@@ -84,13 +84,13 @@ helm upgrade -i jaeger jaegertracing/jaeger \
 
 * Create a service for Istio to send metrics
 ```shell
-kubectl apply --context cluster-1 -f data/tracing-service.yaml
-kubectl apply --context cluster-2 -f data/tracing-service.yaml
+kubectl apply --context lob-01 -f data/tracing-service.yaml
+kubectl apply --context lob-02 -f data/tracing-service.yaml
 ```
 
 * Enable Tracing within each cluster
 ```shell
-kubectl apply --context cluster-1 -f - <<EOF
+kubectl apply --context lob-01 -f - <<EOF
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:
@@ -106,7 +106,7 @@ spec:
   - providers:
     - name: envoyOtelAls
 EOF
-kubectl apply --context cluster-2 -f - <<EOF
+kubectl apply --context lob-02 -f - <<EOF
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:

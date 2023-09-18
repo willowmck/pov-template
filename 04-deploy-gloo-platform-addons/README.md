@@ -5,21 +5,21 @@ The Gloo Platform Addons are extensions that helm enable certain features that a
 
 * Create the Gloo Platform Addons namespace
 ```shell
-kubectl apply --context cluster-1 -f data/namespaces.yaml
+kubectl apply --context management -f data/namespaces.yaml
 ```
 
-* Install Gloo Platform Addon applications in cluster-1
+* Install Gloo Platform Addon applications in cluster
 ```shell
 helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
   --namespace gloo-platform-addons \
-  --kube-context=cluster-1 \
+  --kube-context=management \
   --version 2.4.0 \
   -f data/gloo-platform-addons.yaml
 ```
 
 * Verify pods are up and running
 ```bash
-kubectl get pods -n gloo-platform-addons --context cluster-1
+kubectl get pods -n gloo-platform-addons --context management
 ```
 
 * Register the external authorization server with Gloo Platform
@@ -53,7 +53,7 @@ spec:
   - number: 8083
     protocol: TCP
   services:
-  - cluster: "cluster-1"
+  - cluster: "management"
     name: ext-auth-service
     namespace: gloo-platform-addons
 EOF

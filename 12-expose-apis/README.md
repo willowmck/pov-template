@@ -5,7 +5,7 @@
 Next, lets see how easy it is to expose multiple applications. The Online Boutique frontend relies on a number of APIs to populate the UI. The product catalog API is responsible for displaying the available products and the currency API converts the cost of each product into the required denomination. To expose these apis, we will match on URI `prefix: /currencies` and send to the currency service and `prefix: /products` to the product catalog service.
 * Reminder to set the `GLOO_GATEWAY_HTTPS` environment variable
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context lob-01 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
@@ -49,7 +49,7 @@ curl -k https://$GLOO_GATEWAY_HTTPS/products
 
 ## Expose API In Another Cluster
 
-The Gloo Gateway can also expose applications that do no reside in its own cluster using VirtualDestinations. The following lab exposes the `shipping` API in cluster-2.
+The Gloo Gateway can also expose applications that do no reside in its own cluster using VirtualDestinations. The following lab exposes the `shipping` API in lob-02.
 
 * Since the API is owned by the Checkout Team, the Ops team need to import their service to make it routable. 
 ```shell

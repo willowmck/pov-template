@@ -6,13 +6,13 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - revision: 1-16
+    - revision: 1.18.2
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: lob-01
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
-      - name: cluster-2
+      - name: lob-02
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
       istioOperatorSpec:

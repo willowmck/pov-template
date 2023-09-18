@@ -20,6 +20,6 @@ spec:
           - ref:
               name: productcatalogservice
               namespace: online-boutique
-              cluster: cluster-1
+              cluster: lob-01
             port:
               number: 3555
