@@ -89,7 +89,16 @@ kubectl apply --context management -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: cluster-1
+  name: web
+  namespace: gloo-mesh
+spec:
+  clusterDomain: cluster.local
+---
+kubectl apply --context management -f - <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: KubernetesCluster
+metadata:
+  name: lob-01
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local
@@ -97,90 +106,129 @@ spec:
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: cluster-2
+  name: lob-02
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local
 EOF
 ```
-
-## Install Gloo Agent on Cluster: cluster-1
+## Install Gloo Agent on Cluster: web
 
 By simply installing the Gloo Platform Agent on a remote cluster you gain the ability to manage it with Gloo Platform. Initially, the Gloo Agent is non-invasive and simply relays service discovery information to the Management Plane.
-* Create the `gloo-mesh` namespace in cluster cluster-1
+* Create the `gloo-mesh` namespace in cluster web
 ```shell
-kubectl create namespace gloo-mesh --context cluster-1
+kubectl create namespace gloo-mesh --context web
 ```
 
 * Add the authentication token and root TLS certificate
 ```shell
-kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context cluster-1 -n gloo-mesh
-kubectl create secret generic relay-identity-token-secret --from-file token=token --context cluster-1 -n gloo-mesh
+kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context web -n gloo-mesh
+kubectl create secret generic relay-identity-token-secret --from-file token=token --context web -n gloo-mesh
 ```
-* Install the Gloo Agent in cluster-1
+* Install the Gloo Agent in web
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.0 \
   --namespace=gloo-mesh \
-  --kube-context cluster-1
+  --kube-context web
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
   --version=2.4.0 \
   --namespace gloo-mesh \
-  --kube-context cluster-1 \
+  --kube-context web \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=cluster-1 \
+  --set common.cluster=web \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify the `gloo-mesh-agent` logs
 ```bash
-kubectl logs deploy/gloo-mesh-agent --context cluster-1 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context web -n gloo-mesh
 ```
 
 * Verify the `gloo-telemetry-collector` logs
 ```bash
-kubectl logs ds/gloo-telemetry-collector-agent --context cluster-1 -n gloo-mesh
+kubectl logs ds/gloo-telemetry-collector-agent --context web -n gloo-mesh
 ```
 
-## Install Gloo Agent on Cluster: cluster-2
+## Install Gloo Agent on Cluster: lob-01
 
-* Create the `gloo-mesh` namespace in cluster cluster-2
+By simply installing the Gloo Platform Agent on a remote cluster you gain the ability to manage it with Gloo Platform. Initially, the Gloo Agent is non-invasive and simply relays service discovery information to the Management Plane.
+* Create the `gloo-mesh` namespace in cluster lob-01
 ```shell
-kubectl create namespace gloo-mesh --context cluster-2
+kubectl create namespace gloo-mesh --context lob-01
 ```
 
 * Add the authentication token and root TLS certificate
 ```shell
-kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context cluster-2 -n gloo-mesh
-kubectl create secret generic relay-identity-token-secret --from-file token=token --context cluster-2 -n gloo-mesh
+kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context lob-01 -n gloo-mesh
+kubectl create secret generic relay-identity-token-secret --from-file token=token --context lob-01 -n gloo-mesh
 ```
-* Install the Gloo Agent in cluster-2
+* Install the Gloo Agent in lob-01
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.0 \
   --namespace=gloo-mesh \
-  --kube-context cluster-2
+  --kube-context lob-01
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
   --version=2.4.0 \
   --namespace gloo-mesh \
-  --kube-context cluster-2 \
+  --kube-context lob-01 \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=cluster-2 \
+  --set common.cluster=lob-01 \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify the `gloo-mesh-agent` logs
 ```bash
-kubectl logs deploy/gloo-mesh-agent --context cluster-2 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context lob-01 -n gloo-mesh
 ```
 
 * Verify the `gloo-telemetry-collector` logs
 ```bash
-kubectl logs ds/gloo-telemetry-collector-agent --context cluster-2 -n gloo-mesh
+kubectl logs ds/gloo-telemetry-collector-agent --context lob-01 -n gloo-mesh
+```
+
+## Install Gloo Agent on Cluster: lob-02
+
+* Create the `gloo-mesh` namespace in cluster lob-02
+```shell
+kubectl create namespace gloo-mesh --context lob-02
+```
+
+* Add the authentication token and root TLS certificate
+```shell
+kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context lob-02 -n gloo-mesh
+kubectl create secret generic relay-identity-token-secret --from-file token=token --context lob-02 -n gloo-mesh
+```
+* Install the Gloo Agent in lob-02
+```shell
+helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
+  --version=2.4.0 \
+  --namespace=gloo-mesh \
+  --kube-context lob-02
+
+helm upgrade -i gloo-agent gloo-platform/gloo-platform \
+  --version=2.4.0 \
+  --namespace gloo-mesh \
+  --kube-context lob-02 \
+  --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
+  --set common.cluster=lob-02 \
+  --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
+  -f data/gloo-agent-values.yaml
+```
+
+* Verify the `gloo-mesh-agent` logs
+```bash
+kubectl logs deploy/gloo-mesh-agent --context lob-02 -n gloo-mesh
+```
+
+* Verify the `gloo-telemetry-collector` logs
+```bash
+kubectl logs ds/gloo-telemetry-collector-agent --context lob-02 -n gloo-mesh
 ```
 
 ## Verify connectivity in the Gloo Platform UI
