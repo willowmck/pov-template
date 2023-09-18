@@ -2,10 +2,10 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
   name: management
-  region: us-east-2
-  version: "1.24"
+  region: us-east-1
+  version: "1.26"
 nodeGroups:
-  - name: node-group-1
+  - name: ng-1
     instanceType: m5.xlarge
     desiredCapacity: 2
     privateNetworking: true
