@@ -29,10 +29,10 @@ eksctl create cluster -f data/management.yaml
 * Update the kubernetes context names
 ```shell
 export AWS_USER=<user>
-kubectl config rename-context $AWS_USER@cluster-1.us-east-2.eksctl.io web
-kubectl config rename-context $AWS_USER@cluster-2.us-west-2.eksctl.io lob-01
-kubectl config rename-context $AWS_USER@cluster-2.us-west-2.eksctl.io lob-02
-kubectl config rename-context $AWS_USER@management.us-east-2.eksctl.io management
+kubectl config rename-context $AWS_USER@web.us-east-1.eksctl.io web
+kubectl config rename-context $AWS_USER@lob-01.us-east-1.eksctl.io lob-01
+kubectl config rename-context $AWS_USER@lob-02.us-east-1.eksctl.io lob-02
+kubectl config rename-context $AWS_USER@management.us-east-1.eksctl.io management
 ```
 
 ## Install AWS [Load Balancer Controller](https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html)
@@ -77,7 +77,6 @@ eksctl create iamserviceaccount \
   --attach-policy-arn=arn:aws:iam::$AWS_ACCOUNT_ID:policy/AWSLoadBalancerControllerIAMPolicy \
   --override-existing-serviceaccounts \
   --approve
-
 
 eksctl create iamserviceaccount \
   --cluster=lob-02 \
