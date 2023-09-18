@@ -39,14 +39,14 @@ kubectl create namespace gloo-mesh --context management
 
 * Install Gloo Platform. This command installs the management plane components, such as the management server, UI and Prometheus server.
 ```shell
-# helm show values gloo-platform/gloo-platform --version 2.3.9 > gloo-platform-values.yaml
+# helm show values gloo-platform/gloo-platform --version 2.4.0 > gloo-platform-values.yaml
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --kube-context management \
   --namespace=gloo-mesh
 
 helm upgrade -i gloo-platform gloo-platform/gloo-platform \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --namespace=gloo-mesh \
   --kube-context management \
   --set licensing.glooMeshLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
@@ -120,12 +120,12 @@ kubectl create secret generic relay-identity-token-secret --from-file token=toke
 * Install the Gloo Agent in cluster-1
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --namespace=gloo-mesh \
   --kube-context cluster-1
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --namespace gloo-mesh \
   --kube-context cluster-1 \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
@@ -159,12 +159,12 @@ kubectl create secret generic relay-identity-token-secret --from-file token=toke
 * Install the Gloo Agent in cluster-2
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --namespace=gloo-mesh \
   --kube-context cluster-2
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.3.9 \
+  --version=2.4.0 \
   --namespace gloo-mesh \
   --kube-context cluster-2 \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
