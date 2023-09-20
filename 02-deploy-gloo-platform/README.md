@@ -44,6 +44,7 @@ export GLOO_MESH_LICENSE_KEY=<gloo-mesh-license-key>
 meshctl install --profiles mgmt-server \
   --kubecontext $MGMT_CONTEXT \
   --set common.cluster=$MGMT_CLUSTER \
+  --set jaeger.enabled=true \
   --set licensing.glooMeshLicenseKey=$GLOO_MESH_LICENSE_KEY
 ```
 
@@ -77,18 +78,21 @@ meshctl cluster register $REMOTE_CLUSTER1 \
   --kubecontext $MGMT_CONTEXT \
   --remote-context $REMOTE_CONTEXT1 \
   --profiles agent,ratelimit,extauth \
+  --set jaeger.enabled=true \
   --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
 
 meshctl cluster register $REMOTE_CLUSTER2 \
   --kubecontext $MGMT_CONTEXT \
   --remote-context $REMOTE_CONTEXT2 \
   --profiles agent,ratelimit,extauth \
+  --set jaeger.enabled=true \
   --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
 
 meshctl cluster register $REMOTE_CLUSTER3 \
   --kubecontext $MGMT_CONTEXT \
   --remote-context $REMOTE_CONTEXT3 \
   --profiles agent,ratelimit,extauth \
+  --set jaeger.enabled=true \
   --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
 ```
 
