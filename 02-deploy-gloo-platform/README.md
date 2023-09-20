@@ -16,10 +16,10 @@ At its core, the Gloo Platform is a simple deployment of a management server and
 [Low-level architecture](images/gloo-platform-network-arch.png) - More in-depth diagram showing the communication between the components running in the clusters.
 ## Setup Using meshctl
 
-1. Install meshctl, the Gloo command line tool for bootstrapping Gloo Platform, registering clusters, describing configured resources, and more. Be sure to download version 2.4.0, which uses the latest Gloo Mesh installation values.
+1. Install meshctl, the Gloo command line tool for bootstrapping Gloo Platform, registering clusters, describing configured resources, and more. Be sure to download version 2.4.1, which uses the latest Gloo Mesh installation values.
 
 ```
-curl -sL https://run.solo.io/meshctl/install | GLOO_MESH_VERSION=v2.4.0 sh -
+curl -sL https://run.solo.io/meshctl/install | GLOO_MESH_VERSION=v2.4.1 sh -
 export PATH=$HOME/.gloo-mesh/bin:$PATH
 ```
 
