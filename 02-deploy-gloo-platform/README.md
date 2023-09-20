@@ -14,8 +14,103 @@ At its core, the Gloo Platform is a simple deployment of a management server and
 ![Gloo Platform Components](images/gloo-platform-simplified.png)
 
 [Low-level architecture](images/gloo-platform-network-arch.png) - More in-depth diagram showing the communication between the components running in the clusters.
+## Setup Using meshctl
 
-## Setup
+1. Install meshctl, the Gloo command line tool for bootstrapping Gloo Platform, registering clusters, describing configured resources, and more. Be sure to download version 2.4.0, which uses the latest Gloo Mesh installation values.
+
+```
+curl -sL https://run.solo.io/meshctl/install | GLOO_MESH_VERSION=v2.4.0 sh -
+export PATH=$HOME/.gloo-mesh/bin:$PATH
+```
+
+2. Set the environment variables based on the clusters. You can rename a context by running kubectl config rename-context <oldcontext> <newcontext>.
+
+```
+export MGMT_CONTEXT=mgmt
+export REMOTE_CONTEXT1=web
+export REMOTE_CONTEXT2=lob-01
+export REMOTE_CONTEXT3=lob-02
+```
+
+3. Set your Gloo Mesh license key as an environment variable. If you do not have one, contact an account representative.
+
+```
+export GLOO_MESH_LICENSE_KEY=<gloo-mesh-license-key>
+```
+
+4. Install the Gloo Platform control plane in your management cluster. This command uses a basic profile to create a gloo-mesh namespace and install the control plane components, such as the management server and Prometheus server, in your management cluster.
+
+```
+meshctl install --profiles mgmt-server \
+  --kubecontext $MGMT_CONTEXT \
+  --set common.cluster=$MGMT_CLUSTER \
+  --set licensing.glooMeshLicenseKey=$GLOO_MESH_LICENSE_KEY
+```
+
+5. Verify that the control plane pods are running.
+
+```
+kubectl get pods -n gloo-mesh --context $MGMT_CONTEXT
+```
+
+6. Save the external address and port that were assigned by your cloud provider to the Gloo OpenTelemetry (OTel) gateway load balancer service. The OTel collector agents in each workload cluster send metrics to this address.
+
+```
+export TELEMETRY_GATEWAY_IP=$(kubectl get svc -n gloo-mesh gloo-telemetry-gateway --context $MGMT_CONTEXT -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+export TELEMETRY_GATEWAY_PORT=$(kubectl -n gloo-mesh get service gloo-telemetry-gateway --context $MGMT_CONTEXT -o jsonpath='{.spec.ports[?(@.name=="otlp")].port}')
+export TELEMETRY_GATEWAY_ADDRESS=${TELEMETRY_GATEWAY_IP}:${TELEMETRY_GATEWAY_PORT}
+echo $TELEMETRY_GATEWAY_ADDRESS
+```
+
+7. Prepare the gloo-mesh-addons namespace.
+
+```
+kubectl create ns gloo-mesh-addons --context $REMOTE_CONTEXT1
+kubectl create ns gloo-mesh-addons --context $REMOTE_CONTEXT2
+kubectl create ns gloo-mesh-addons --context $REMOTE_CONTEXT3
+```
+
+8. Register both workload clusters with the management server. These commands use basic profiles to install the Gloo agent, rate limit server, and external auth server in each workload cluster.
+
+```
+meshctl cluster register $REMOTE_CLUSTER1 \
+  --kubecontext $MGMT_CONTEXT \
+  --remote-context $REMOTE_CONTEXT1 \
+  --profiles agent,ratelimit,extauth \
+  --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
+
+meshctl cluster register $REMOTE_CLUSTER2 \
+  --kubecontext $MGMT_CONTEXT \
+  --remote-context $REMOTE_CONTEXT2 \
+  --profiles agent,ratelimit,extauth \
+  --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
+
+meshctl cluster register $REMOTE_CLUSTER3 \
+  --kubecontext $MGMT_CONTEXT \
+  --remote-context $REMOTE_CONTEXT3 \
+  --profiles agent,ratelimit,extauth \
+  --telemetry-server-address $TELEMETRY_GATEWAY_ADDRESS
+```
+
+9. Verify that the Gloo data plane components are healthy.
+
+```
+meshctl check --kubecontext $REMOTE_CONTEXT1
+meshctl check --kubecontext $REMOTE_CONTEXT2
+meshctl check --kubecontext $REMOTE_CONTEXT3
+```
+
+10. Verify that your Gloo Mesh setup is correctly installed. This check might take a few seconds to verify that:
+- Your Gloo Platform product licenses are valid and current.
+- The Gloo Platform CRDs are installed at the correct version.
+- The control plane pods in the management cluster are running and healthy.
+- The agents in the workload clusters are successfully identified by the control plane.
+
+```
+meshctl check --kubecontext $MGMT_CONTEXT
+```
+
+## Setup Using Helm
 
 * A licence key is needed to install the Gloo Platform. If you do not have a license key, contact an account representative. 
 ```shell
