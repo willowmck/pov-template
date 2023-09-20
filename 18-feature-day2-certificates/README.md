@@ -144,7 +144,7 @@ kubectl delete secret relay-root-tls-secret --context management -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-platform gloo-platform/gloo-platform \
-  --version=2.4.0 \
+  --version=2.4.1 \
   --namespace=gloo-mesh \
   --kube-context management \
   --reuse-values \
@@ -258,7 +258,7 @@ kubectl delete secret relay-identity-token-secret --context lob-01 -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.0  \
+  --version=2.4.1  \
   --namespace gloo-mesh \
   --kube-context lob-01 \
   --reuse-values \
@@ -405,7 +405,7 @@ kubectl delete secret relay-identity-token-secret --context lob-02 -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.0  \
+  --version=2.4.1  \
   --namespace gloo-mesh \
   --kube-context lob-02 \
   --reuse-values \
