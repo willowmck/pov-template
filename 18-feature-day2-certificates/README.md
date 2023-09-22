@@ -31,22 +31,22 @@ helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.12.2 \
-  --kube-context lob-01 \
+  --kube-context cluster-1 \
   -f data/cert-manager-values.yaml
 
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.12.2 \
-  --kube-context lob-02 \
+  --kube-context cluster-2 \
   -f data/cert-manager-values.yaml
 ```
 
 * Wait for deployments to become healthy
 ```shell
 kubectl wait deployment --for condition=Available=True --all --context management -n cert-manager
-kubectl wait deployment --for condition=Available=True --all --context lob-01 -n cert-manager
-kubectl wait deployment --for condition=Available=True --all --context lob-02 -n cert-manager
+kubectl wait deployment --for condition=Available=True --all --context cluster-1 -n cert-manager
+kubectl wait deployment --for condition=Available=True --all --context cluster-2 -n cert-manager
 ```
 ## Self Signed Root Cert
 
@@ -55,22 +55,22 @@ This lab will use a self signed root certificate for all relay and workload cert
 * Create the self-signed secret
 ```shell
 kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context management -n cert-manager
-kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context lob-01 -n cert-manager
-kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context lob-02 -n cert-manager
+kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context cluster-1 -n cert-manager
+kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context cluster-2 -n cert-manager
 ```
 
 * Create a ClusterIssuer for the root secret
 ```shell
 kubectl apply --context management -n cert-manager -f data/secret-issuer.yaml
-kubectl apply --context lob-01 -n cert-manager -f data/secret-issuer.yaml
-kubectl apply --context lob-02 -n cert-manager -f data/secret-issuer.yaml
+kubectl apply --context cluster-1 -n cert-manager -f data/secret-issuer.yaml
+kubectl apply --context cluster-2 -n cert-manager -f data/secret-issuer.yaml
 ```
 
 * Verify the issuers 
 ```bash
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context management -n cert-manager
-kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob-01 -n cert-manager
-kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob-02 -n cert-manager
+kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context cluster-1 -n cert-manager
+kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context cluster-2 -n cert-manager
 ```
 
 ## Cluster: management Configuration
@@ -144,14 +144,14 @@ kubectl delete secret relay-root-tls-secret --context management -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-platform gloo-platform/gloo-platform \
-  --version=2.4.1 \
+  --version=2.3.9 \
   --namespace=gloo-mesh \
   --kube-context management \
   --reuse-values \
   -f data/gloo-mgmt-values.yaml
 ```
 
-## Cluster: lob-01 Configuration
+## Cluster: cluster-1 Configuration
 
 The workload clusters will need 2-3 certificates depending on your environment. The Gloo Platform Agent will require a client mTLS certificate for communicating with the Gloo Platform Server. Likewise the Telemetry Collector will also require an mTLS certificate to communicate with the Telemetry Gateway.
 
@@ -159,12 +159,12 @@ If you are relying on Istio's CA issuer functionality, you will also need to iss
 
 * Verify issuers is correctly setup
 ```shell
-kubectl get clusterissuer --context lob-01 -n cert-manager
+kubectl get clusterissuer --context cluster-1 -n cert-manager
 ```
 
 * Create certificates for Gloo Agent, Telemetry Gateway and Istio if needed
 ```shell
-kubectl apply --context lob-01 -f - <<EOF
+kubectl apply --context cluster-1 -f - <<EOF
 kind: Certificate
 apiVersion: cert-manager.io/v1
 metadata:
@@ -174,7 +174,7 @@ spec:
   commonName: gloo-agent
   dnsNames:
     # Must match the cluster name used in the install
-    - "lob-01"
+    - "cluster-1"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -198,7 +198,7 @@ metadata:
 spec:
   commonName: gloo-telemetry-collector
   dnsNames:
-    - "lob-01-gloo-telemetry-collector"
+    - "cluster-1-gloo-telemetry-collector"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -223,14 +223,14 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonName: lob-01.demo.example.com
+  commonName: cluster-1.demo.example.com
   isCA: true
   usages:
     - digital signature
     - key encipherment
     - cert sign
   dnsNames:
-    - lob-01.demo.example.com
+    - cluster-1.demo.example.com
   issuerRef:
     kind: ClusterIssuer
     name: self-signed-issuer
@@ -239,79 +239,79 @@ EOF
 
 * Verify certificates were created
 ```shell
-kubectl get certificates --context lob-01 -n gloo-mesh
-kubectl get certificates --context lob-01 -n istio-system
+kubectl get certificates --context cluster-1 -n gloo-mesh
+kubectl get certificates --context cluster-1 -n istio-system
 ```
 
 **Note** if certificates were not generated it may be beneficial to look at the cert manager logs.
 ```shell
-kubectl logs deploy/cert-manager --context lob-01 -n cert-manager
-kubectl logs deploy/cert-manager-istio-csr --context lob-01 -n cert-manager
+kubectl logs deploy/cert-manager --context cluster-1 -n cert-manager
+kubectl logs deploy/cert-manager-istio-csr --context cluster-1 -n cert-manager
 ```
 * Cleanup old Gloo certificates and allow cert-manager to replace them
 ```shell
-kubectl delete secret relay-client-tls-secret --context lob-01 -n gloo-mesh
-kubectl delete secret relay-root-tls-secret --context lob-01 -n gloo-mesh
-kubectl delete secret relay-identity-token-secret --context lob-01 -n gloo-mesh
+kubectl delete secret relay-client-tls-secret --context cluster-1 -n gloo-mesh
+kubectl delete secret relay-root-tls-secret --context cluster-1 -n gloo-mesh
+kubectl delete secret relay-identity-token-secret --context cluster-1 -n gloo-mesh
 ```
 
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.1  \
+  --version=2.3.9  \
   --namespace gloo-mesh \
-  --kube-context lob-01 \
+  --kube-context cluster-1 \
   --reuse-values \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify Gloo Agent connectivity
 ```shell
-kubectl logs deploy/gloo-mesh-agent --context lob-01 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context cluster-1 -n gloo-mesh
 ```
 
 * Update Istio to use new CA certificate
 ```shell
-kubectl delete secret cacerts --context lob-01 -n istio-system
+kubectl delete secret cacerts --context cluster-1 -n istio-system
 ```
 
 * Verify new cacerts is generated
 ```shell
-kubectl get secret cacerts --context lob-01 -n istio-system
+kubectl get secret cacerts --context cluster-1 -n istio-system
 ```
 
 * Restart Istiod to pick up new certificate
 ```shell
-kubectl rollout restart deploy --context lob-01 -n istio-system
+kubectl rollout restart deploy --context cluster-1 -n istio-system
 ```
 
 * Verify new certificate is picked up by istiod
 ```shell
-kubectl logs -l app=istiod --tail 500 --context lob-01 -n istio-system| grep x509
+kubectl logs -l app=istiod --tail 500 --context cluster-1 -n istio-system| grep x509
 ```
 
 * Restart Gateways
 ```shell
-kubectl rollout restart deploy --context lob-01 -n istio-ingress
-kubectl rollout restart deploy --context lob-01 -n istio-eastwest
-kubectl rollout restart deploy --context lob-01 -n gloo-platform-addons
+kubectl rollout restart deploy --context cluster-1 -n istio-ingress
+kubectl rollout restart deploy --context cluster-1 -n istio-eastwest
+kubectl rollout restart deploy --context cluster-1 -n gloo-platform-addons
 ```
 
 * Restart workloads
 ```shell 
-kubectl rollout restart deploy -n online-boutique --context lob-01
+kubectl rollout restart deploy -n online-boutique --context cluster-1
 ```
 
-## Cluster: lob-02 Configuration
+## Cluster: cluster-2 Configuration
 
 * Verify issuers is correctly setup
 ```shell
-kubectl get clusterissuer --context lob-02 -n cert-manager
+kubectl get clusterissuer --context cluster-2 -n cert-manager
 ```
 
 * Create certificates for Gloo Agent, Telemetry Gateway and Istio if needed
 ```shell
-kubectl apply --context lob-02 -f - <<EOF
+kubectl apply --context cluster-2 -f - <<EOF
 kind: Certificate
 apiVersion: cert-manager.io/v1
 metadata:
@@ -321,7 +321,7 @@ spec:
   commonName: gloo-agent
   dnsNames:
     # Must match the cluster name used in the install
-    - "lob-02"
+    - "cluster-2"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -345,7 +345,7 @@ metadata:
 spec:
   commonName: gloo-telemetry-collector
   dnsNames:
-    - "lob-02-gloo-telemetry-collector"
+    - "cluster-2-gloo-telemetry-collector"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -370,14 +370,14 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonName: lob-02.demo.example.com
+  commonName: cluster-2.demo.example.com
   isCA: true
   usages:
     - digital signature
     - key encipherment
     - cert sign
   dnsNames:
-    - lob-02.demo.example.com
+    - cluster-2.demo.example.com
   issuerRef:
     kind: ClusterIssuer
     name: self-signed-issuer
@@ -386,67 +386,67 @@ EOF
 
 * Verify certificates were created
 ```shell
-kubectl get certificates --context lob-02 -n gloo-mesh
-kubectl get certificates --context lob-02 -n istio-system
+kubectl get certificates --context cluster-2 -n gloo-mesh
+kubectl get certificates --context cluster-2 -n istio-system
 ```
 
 **Note** if certificates were not generated it may be beneficial to look at the cert manager logs.
 ```shell
-kubectl logs deploy/cert-manager --context lob-02 -n cert-manager
-kubectl logs deploy/cert-manager-istio-csr --context lob-02 -n cert-manager
+kubectl logs deploy/cert-manager --context cluster-2 -n cert-manager
+kubectl logs deploy/cert-manager-istio-csr --context cluster-2 -n cert-manager
 ```
 * Cleanup old Gloo certificates and allow cert-manager to replace them
 ```shell
-kubectl delete secret relay-client-tls-secret --context lob-02 -n gloo-mesh
-kubectl delete secret relay-root-tls-secret --context lob-02 -n gloo-mesh
-kubectl delete secret relay-identity-token-secret --context lob-02 -n gloo-mesh
+kubectl delete secret relay-client-tls-secret --context cluster-2 -n gloo-mesh
+kubectl delete secret relay-root-tls-secret --context cluster-2 -n gloo-mesh
+kubectl delete secret relay-identity-token-secret --context cluster-2 -n gloo-mesh
 ```
 
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.1  \
+  --version=2.3.9  \
   --namespace gloo-mesh \
-  --kube-context lob-02 \
+  --kube-context cluster-2 \
   --reuse-values \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify Gloo Agent connectivity
 ```shell
-kubectl logs deploy/gloo-mesh-agent --context lob-02 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context cluster-2 -n gloo-mesh
 ```
 
 * Update Istio to use new CA certificate
 ```shell
-kubectl delete secret cacerts --context lob-01 -n istio-system
+kubectl delete secret cacerts --context cluster-1 -n istio-system
 ```
 
 * Verify new cacerts is generated
 ```shell
-kubectl get secret cacerts --context lob-02 -n istio-system
+kubectl get secret cacerts --context cluster-2 -n istio-system
 ```
 
 * Restart Istiod to pick up new certificate
 ```shell
-kubectl rollout restart deploy --context lob-02 -n istio-system
+kubectl rollout restart deploy --context cluster-2 -n istio-system
 ```
 
 * Verify new certificate is picked up by istiod
 ```shell
-kubectl logs -l app=istiod --tail 500 --context lob-02 -n istio-system| grep x509
+kubectl logs -l app=istiod --tail 500 --context cluster-2 -n istio-system| grep x509
 ```
 
 * Restart Gateways
 ```shell
-kubectl rollout restart deploy --context lob-02 -n istio-ingress
-kubectl rollout restart deploy --context lob-02 -n istio-eastwest
+kubectl rollout restart deploy --context cluster-2 -n istio-ingress
+kubectl rollout restart deploy --context cluster-2 -n istio-eastwest
 ```
 
 * Restart workloads
 ```shell 
-kubectl rollout restart deploy -n online-boutique --context lob-02
-kubectl rollout restart deploy -n checkout-apis --context lob-02
+kubectl rollout restart deploy -n online-boutique --context cluster-2
+kubectl rollout restart deploy -n checkout-apis --context cluster-2
 ```
 * Verify that the Gloo UI appears to be healthy
 * Open the Gloo UI and observe the agents are connected and service discovery is working
@@ -457,7 +457,7 @@ echo "Gloo UI: http://localhost:8090"
 
 * Verify Online Boutique is functioning as expected
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context lob-01 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
