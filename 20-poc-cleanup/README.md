@@ -8,7 +8,7 @@ You have completed the POC! The final step is to clean up the deployed assets an
 
 ## Clean Up Applications
 
-* Remove the Online Boutique Applications in cluster-1
+* Remove the Online Boutique Applications in shared
 ```shell
 helm uninstall online-boutique \
   --namespace online-boutique \
@@ -19,7 +19,7 @@ helm uninstall toys-catalog \
   --kube-context shared
 ```
 
-* Remove the Online Boutique Applications in cluster-2
+* Remove the Online Boutique Applications in lob-01
 ```shell
 helm uninstall ha-frontend \
   --namespace online-boutique \
@@ -64,7 +64,7 @@ helm ls -n istio-system --kube-context lob-01
 helm ls -n istio-eastwest --kube-context lob-01
 ```
 
-* Uninstall the gateways in cluster-1
+* Uninstall the gateways in shared
 ```shell
 helm uninstall istio-eastwestgateway \
   --namespace istio-eastwest \
@@ -79,7 +79,7 @@ helm uninstall istio-ingressgateway-1-17 \
   --kube-context shared
 ```
 
-* Uninstall the control plane in cluster-1
+* Uninstall the control plane in shared
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system \
@@ -90,14 +90,14 @@ helm uninstall istiod-1-17 \
   --kube-context shared
 ```
 
-* Uninstall the gateways in cluster-2
+* Uninstall the gateways in lob-01
 ```shell
 helm uninstall istio-eastwestgateway \
   --namespace istio-eastwest \
   --kube-context lob-01
 ```
 
-* Uninstall the control plane in cluster-1
+* Uninstall the control plane in shared
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system \

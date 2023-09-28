@@ -49,7 +49,7 @@ curl -k https://$GLOO_GATEWAY_HTTPS/products
 
 ## Expose API In Another Cluster
 
-The Gloo Gateway can also expose applications that do no reside in its own cluster using VirtualDestinations. The following lab exposes the `shipping` API in cluster-2.
+The Gloo Gateway can also expose applications that do no reside in its own cluster using VirtualDestinations. The following lab exposes the `shipping` API in lob-01.
 
 * Since the API is owned by the Checkout Team, the Ops team need to import their service to make it routable. 
 ```shell

@@ -107,7 +107,7 @@ EOF
 ## Install Gloo Agent on Cluster: shared
 
 By simply installing the Gloo Platform Agent on a remote cluster you gain the ability to manage it with Gloo Platform. Initially, the Gloo Agent is non-invasive and simply relays service discovery information to the Management Plane.
-* Create the `gloo-mesh` namespace in cluster cluster-1
+* Create the `gloo-mesh` namespace in cluster shared
 ```shell
 kubectl create namespace gloo-mesh --context shared
 ```
@@ -117,7 +117,7 @@ kubectl create namespace gloo-mesh --context shared
 kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context shared -n gloo-mesh
 kubectl create secret generic relay-identity-token-secret --from-file token=token --context shared -n gloo-mesh
 ```
-* Install the Gloo Agent in cluster-1
+* Install the Gloo Agent in shared
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.1 \
@@ -146,7 +146,7 @@ kubectl logs ds/gloo-telemetry-collector-agent --context shared -n gloo-mesh
 
 ## Install Gloo Agent on Cluster: lob-01
 
-* Create the `gloo-mesh` namespace in cluster cluster-2
+* Create the `gloo-mesh` namespace in cluster lob-01
 ```shell
 kubectl create namespace gloo-mesh --context lob-01
 ```
@@ -156,7 +156,7 @@ kubectl create namespace gloo-mesh --context lob-01
 kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context lob-01 -n gloo-mesh
 kubectl create secret generic relay-identity-token-secret --from-file token=token --context lob-01 -n gloo-mesh
 ```
-* Install the Gloo Agent in cluster-2
+* Install the Gloo Agent in lob-01
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.1 \

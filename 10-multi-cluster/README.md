@@ -11,7 +11,7 @@ Links:
 ## Deploy Checkout to cluster-2
 
 ![Checkout APIs](images/checkout-apis.png)
-* Create `checkout-apis ` namespace in cluster-2
+* Create `checkout-apis ` namespace in lob-01
 ```shell
 kubectl apply --context lob-01 -f data/namespaces.yaml
 ```
@@ -26,7 +26,7 @@ helm upgrade -i checkout-apis --version "5.0.3" oci://us-central1-docker.pkg.dev
 
 ## Configure Gloo Platform for Checkout Team
 
-The checkout APIs will be managed by the `checkout-team` in cluster-2. To represent this, a new Gloo `Workspace` will be created for this team and its services will be exported to the `app-team`. The `app-team` workspace will need to be updated to import the `checkout-team` services.
+The checkout APIs will be managed by the `checkout-team` in lob-01. To represent this, a new Gloo `Workspace` will be created for this team and its services will be exported to the `app-team`. The `app-team` workspace will need to be updated to import the `checkout-team` services.
 
 * Create administration namespace for checkout-team
 ```shell

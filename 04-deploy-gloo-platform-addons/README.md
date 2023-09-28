@@ -8,7 +8,7 @@ The Gloo Platform Addons are extensions that helm enable certain features that a
 kubectl apply --context shared -f data/namespaces.yaml
 ```
 
-* Install Gloo Platform Addon applications in cluster-1
+* Install Gloo Platform Addon applications in shared
 ```shell
 helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
   --namespace gloo-platform-addons \

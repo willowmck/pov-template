@@ -14,7 +14,7 @@ Links:
 This lab will deploy the frontend application to both cluster-1 and cluster-2 and update the ingress routing to route to both availabile endpoints. You will then tune the routing to prefer the local frontend and failover to the other when something bad happens. 
 ![High Availability Frontend](images/ha-frontend.png)
 
-* Create online-boutique namespace in cluster-2
+* Create online-boutique namespace in lob-01
 ```shell
 kubectl apply --context lob-01 -f - <<EOF
 apiVersion: v1
@@ -26,7 +26,7 @@ metadata:
 EOF
 ```
 
-* Deploy frontend in cluster-2
+* Deploy frontend in lob-01
 ```shell
 helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --kube-context lob-01 \
@@ -35,7 +35,7 @@ helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/f
   -f  data/web-ui-values.yaml
 ```
 
-* Wait until the frontend in cluster-2 is ready.
+* Wait until the frontend in lob-01 is ready.
 
 * Create a VirtualDestination to represent both frontend applications.
 ```shell
@@ -136,10 +136,10 @@ EOF
 
 ## Perform Failover
 
-With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in cluster-1 will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove cluster-1 frontend from the list of available endpoints. It will then prefer the endpoint in cluster-2 until cluster-1 frontend is healthy again. 
+With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in shared will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove cluster-1 frontend from the list of available endpoints. It will then prefer the endpoint in lob-01 until cluster-1 frontend is healthy again. 
 ![Failover](images/failover.png)
 
-* Break frontend in cluster-1 so that it can no longer respond to traffic
+* Break frontend in shared so that it can no longer respond to traffic
 ```shell
 kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":["sleep","20h"],"readinessProbe":null,"livenessProbe":null}]}}}}' --context shared -n online-boutique
 ```
@@ -150,7 +150,7 @@ kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers"
 
 * Refresh the Online Boutique and observe the error and failover to cluster-2
 
-* Fix frontend in cluster-1
+* Fix frontend in shared
 ```shell
 kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":[],"readinessProbe":null,"livenessProbe":null}]}}}}' --context shared -n online-boutique
 ```
