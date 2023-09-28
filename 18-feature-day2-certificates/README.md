@@ -73,7 +73,7 @@ kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context s
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob-01 -n cert-manager
 ```
 
-## Cluster: management Configuration
+## Cluster: mgmt Configuration
 
 The Gloo Platform server and Telemetry Gateway will need mTLS server certificates. The following commands generate the two certificates to allow the applications to receive connections from the workload clusters.
 * Create certificates for Gloo Management Server and Telemetry Gateway
@@ -151,7 +151,7 @@ helm upgrade --install gloo-platform gloo-platform/gloo-platform \
   -f data/gloo-mgmt-values.yaml
 ```
 
-## Cluster: cluster-1 Configuration
+## Cluster: shared Configuration
 
 The workload clusters will need 2-3 certificates depending on your environment. The Gloo Platform Agent will require a client mTLS certificate for communicating with the Gloo Platform Server. Likewise the Telemetry Collector will also require an mTLS certificate to communicate with the Telemetry Gateway.
 
@@ -302,7 +302,7 @@ kubectl rollout restart deploy --context shared -n gloo-platform-addons
 kubectl rollout restart deploy -n online-boutique --context shared
 ```
 
-## Cluster: cluster-2 Configuration
+## Cluster: lob-01 Configuration
 
 * Verify issuers is correctly setup
 ```shell

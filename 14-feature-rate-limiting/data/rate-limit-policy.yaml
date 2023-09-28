@@ -10,7 +10,7 @@ spec:
     ref:
       name: rate-limiter
       namespace: gloo-platform-addons
-      cluster: cluster-1
+      cluster: shared
 ---
 apiVersion: trafficcontrol.policy.gloo.solo.io/v2
 kind: RateLimitClientConfig
@@ -32,7 +32,7 @@ metadata:
 spec:
   destinationServers:
   - ref:
-      cluster: cluster-1
+      cluster: shared
       name: rate-limiter
       namespace: gloo-platform-addons
     port:
@@ -59,14 +59,14 @@ spec:
     serverSettings:
       name: rate-limit-server-settings
       namespace: app-team
-      cluster: management
+      cluster: mgmt
     ratelimitClientConfig:
       name: rate-limit-client-config
       namespace: app-team
-      cluster: management
+      cluster: mgmt
     ratelimitServerConfig:
       name: rate-limit-server-config
       namespace: ops-team
-      cluster: management
+      cluster: mgmt
     phase:
       preAuthz: { }

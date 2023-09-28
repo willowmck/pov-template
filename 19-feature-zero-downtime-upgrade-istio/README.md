@@ -10,7 +10,7 @@ Links:
 - [Gloo Platform Managed Istio](https://docs.solo.io/gloo-mesh-enterprise/latest/setup/installation/istio/gm_managed_istio/)
 - [GatewayLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/gateway_lifecycle_manager/)
 - [IstioLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/istio_lifecycle_manager/)
-## Upgrade Istio using Helm in Cluster: cluster-1
+## Upgrade Istio using Helm in Cluster: shared
 
 * To upgrade Istio we will deploy a whole new canary version beside it. We will also deploy new gateways and migrate traffic to them.
 
@@ -112,7 +112,7 @@ helm uninstall istiod-1-16 \
 istioctl proxy-status --context shared
 ```
 
-## Upgrade Istio using Helm in Cluster: cluster-2
+## Upgrade Istio using Helm in Cluster: lob-01
 
 * Upgrade Istiod to 1-17 components
 ```shell

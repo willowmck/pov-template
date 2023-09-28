@@ -18,5 +18,5 @@ spec:
             ref:
               name: external-service
               namespace: app-team
-              cluster: management
+              cluster: mgmt
 ---

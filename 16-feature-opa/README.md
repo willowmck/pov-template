@@ -56,7 +56,7 @@ spec:
     server:
       name: ext-auth-server
       namespace: ops-team
-      cluster: management
+      cluster: mgmt
     glooAuth:
       configs:
       - opaAuth:

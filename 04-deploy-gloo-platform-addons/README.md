@@ -37,7 +37,7 @@ spec:
     port:
       number: 8083
     ref:
-      cluster: management
+      cluster: mgmt
       name: ext-auth-server-vd
       namespace: ops-team
 ---

@@ -20,6 +20,6 @@ spec:
           - ref:
               name: productcatalogservice
               namespace: online-boutique
-              cluster: cluster-1
+              cluster: shared
             port:
               number: 3555

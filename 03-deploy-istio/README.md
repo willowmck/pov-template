@@ -21,7 +21,7 @@ helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 ```
 
-## Install Istio on Cluster: cluster-1
+## Install Istio on Cluster: shared
 
 ![Istio Components cluster-1](images/istio-cluster1.png)
 
@@ -120,7 +120,7 @@ kubectl get service --context shared -n istio-ingress
 kubectl get service --context shared -n istio-eastwest
 ```
 
-## Install Istio on Cluster: cluster-2
+## Install Istio on Cluster: lob-01
 
 ![Istio Components cluster-2](images/istio-cluster2.png)
 

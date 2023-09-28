@@ -104,7 +104,7 @@ spec:
 EOF
 ```
 
-## Install Gloo Agent on Cluster: cluster-1
+## Install Gloo Agent on Cluster: shared
 
 By simply installing the Gloo Platform Agent on a remote cluster you gain the ability to manage it with Gloo Platform. Initially, the Gloo Agent is non-invasive and simply relays service discovery information to the Management Plane.
 * Create the `gloo-mesh` namespace in cluster cluster-1
@@ -144,7 +144,7 @@ kubectl logs deploy/gloo-mesh-agent --context shared -n gloo-mesh
 kubectl logs ds/gloo-telemetry-collector-agent --context shared -n gloo-mesh
 ```
 
-## Install Gloo Agent on Cluster: cluster-2
+## Install Gloo Agent on Cluster: lob-01
 
 * Create the `gloo-mesh` namespace in cluster cluster-2
 ```shell

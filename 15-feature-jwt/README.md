@@ -77,7 +77,7 @@ spec:
             ref:
               name: auth0
               namespace: app-team
-              cluster: management
+              cluster: mgmt
             kind: EXTERNAL_SERVICE
             port:
               number: 443
