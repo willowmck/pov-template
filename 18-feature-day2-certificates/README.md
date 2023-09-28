@@ -223,7 +223,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonName: cluster-1.demo.example.com
+  commonname: shared.demo.example.com
   isCA: true
   usages:
     - digital signature
@@ -370,7 +370,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonName: cluster-2.demo.example.com
+  commonname: lob-01.demo.example.com
   isCA: true
   usages:
     - digital signature

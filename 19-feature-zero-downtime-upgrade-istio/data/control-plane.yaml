@@ -9,10 +9,10 @@ spec:
     - revision: 1-16
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: false
-      - name: cluster-2
+      - name: lob-01
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: false
       istioOperatorSpec:
@@ -95,10 +95,10 @@ spec:
     - revision: 1-17
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
-      - name: cluster-2
+      - name: lob-01
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
       istioOperatorSpec:

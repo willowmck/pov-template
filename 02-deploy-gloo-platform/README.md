@@ -89,7 +89,7 @@ kubectl apply --context mgmt -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: cluster-1
+  name: shared
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local
@@ -97,7 +97,7 @@ spec:
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: cluster-2
+  name: lob-01
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local

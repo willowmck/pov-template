@@ -9,10 +9,10 @@ spec:
     - gatewayRevision: 1-16
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: false
-      - name: cluster-2
+      - name: lob-01
         activeGateway: true
       istioOperatorSpec:
         # No control plane components are installed
@@ -65,7 +65,7 @@ spec:
     - gatewayRevision: 1-17
       # List all workload clusters to install Istio into
       clusters:
-      - name: cluster-1
+      - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: true
       istioOperatorSpec:

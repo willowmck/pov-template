@@ -1,4 +1,4 @@
-clusterName: cluster-2
+clustername: lob-01
 endpoints:
   productCatalogService: 'product-catalog.app-team.demo.example.com:80'
   currencyService: 'currency.app-team.demo.example.com:80'

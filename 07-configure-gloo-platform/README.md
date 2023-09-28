@@ -26,7 +26,7 @@ metadata:
 spec:
   workloadClusters:
   # administrative namespace
-  - name: management
+  - name: mgmt
     namespaces:
     - name: ops-team
   # remote cluster namespaces
@@ -80,7 +80,7 @@ metadata:
 spec:
   workloadClusters:
   # admistrative namespace
-  - name: management
+  - name: mgmt
     namespaces:
     - name: app-team
   # workload cluster namespace
