@@ -129,7 +129,7 @@ helm upgrade -i gloo-agent gloo-platform/gloo-platform \
   --namespace gloo-mesh \
   --kube-context shared \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=cluster-1 \
+  --set common.cluster=shared \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
@@ -168,7 +168,7 @@ helm upgrade -i gloo-agent gloo-platform/gloo-platform \
   --namespace gloo-mesh \
   --kube-context lob-01 \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=cluster-2 \
+  --set common.cluster=lob-01 \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
