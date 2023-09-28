@@ -27,7 +27,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --namespace istio-system  \
   --kube-context=shared \
   --set "global.multiCluster.clusterName=shared" \
-  --set "meshConfig.trustDomain=cluster-1" \
+  --set "meshConfig.trustDomain=shared" \
   -f data/istiod-values.yaml
 ```
 
@@ -128,7 +128,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --namespace istio-system  \
   --kube-context=lob-01 \
   --set "global.multiCluster.clusterName=lob-01" \
-  --set "meshConfig.trustDomain=cluster-2" \
+  --set "meshConfig.trustDomain=lob-01" \
   -f data/istiod-values.yaml
 
 ```
