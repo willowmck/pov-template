@@ -5,7 +5,7 @@ glooAgent:
     # Image registry.
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-agent
-    tag: 2.3.9
+    tag: 2.4.1
   relay:
     # SNI name in the authority/host header used to connect to relay forwarding server. Must match server certificate CommonName. Do not change the default value.
     authority: "gloo-mesh-mgmt-server.gloo-mesh"
@@ -14,7 +14,7 @@ telemetryCollector:
   enabled: true
   image:
     repository: gcr.io/gloo-mesh/gloo-otel-collector
-    tag: 2.3.9
+    tag: 2.4.1
 # Optional customization for the Gloo Platform Telemetry Collector.
 telemetryCollectorCustomization:
   serverName: "gloo-telemetry-gateway.gloo-mesh"

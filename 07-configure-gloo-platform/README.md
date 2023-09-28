@@ -34,6 +34,7 @@ spec:
     namespaces:
     - name: istio-ingress
     - name: istio-eastwest
+    - name: istio-egress
     - name: gloo-platform-addons
 ---
 # workspace configuration
@@ -101,6 +102,11 @@ spec:
   exportTo:
   - workspaces:
     - name: ops-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          app: gloo-internal-gateway
 EOF
 ```
 

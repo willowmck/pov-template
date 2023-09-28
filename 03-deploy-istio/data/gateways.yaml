@@ -6,7 +6,7 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - gatewayRevision: 1-16
+    - gatewayRevision: 1-17
       # List all workload clusters to install Istio into
       clusters:
       - name: cluster-1
@@ -19,7 +19,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.16.4-solo
+        tag: 1.17.6-solo
         values:
           gateways:
             istio-ingressgateway:
@@ -35,7 +35,7 @@ spec:
               enabled: true
               label:
                 app: gloo-gateway
-                revision: 1-16
+                revision: 1-17
               k8s:
                   serviceAnnotations:
                     service.beta.kubernetes.io/aws-load-balancer-type: "external"
@@ -67,7 +67,7 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - gatewayRevision: 1-16
+    - gatewayRevision: 1-17
       # List all workload clusters to install Istio into
       clusters:
       - name: cluster-1
@@ -82,7 +82,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.16.4-solo
+        tag: 1.17.6-solo
         components:
           ingressGateways:
           # Enable the default east-west gateway
@@ -92,7 +92,7 @@ spec:
               enabled: true
               label:
                 app: gloo-internal-gateway
-                revision: 1-16
+                revision: 1-17
                 topology.istio.io/network: istio-network
               k8s:
                   serviceAnnotations:

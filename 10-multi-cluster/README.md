@@ -67,6 +67,11 @@ spec:
   importFrom:
   - workspaces:
     - name: app-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          app: gloo-internal-gateway
 EOF
 ```
 
@@ -91,6 +96,11 @@ spec:
     - name: ops-team
   - workspaces:
     - name: checkout-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          app: gloo-internal-gateway
 EOF
 ```
 
@@ -114,11 +124,15 @@ metadata:
   namespace: checkout-team
 spec:
   hosts:
-  - checkout.checkout-team.demo.example.com
+  - checkout.checkout-team.tcb.mesh
   services:
   - labels:
       app: checkoutservice
   ports:
+  - number: 81
+    protocol: HTTP
+    targetPort:
+      name: http
   - number: 80
     protocol: GRPC
     targetPort:
@@ -131,7 +145,7 @@ metadata:
   namespace: checkout-team
 spec:
   hosts:
-  - shipping.checkout-team.demo.example.com
+  - shipping.checkout-team.tcb.mesh
   services:
   - labels:
       app: shippingservice

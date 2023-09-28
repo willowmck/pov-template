@@ -34,16 +34,16 @@ kubectl apply --context cluster-1 -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.16.4 \
-  --set defaultRevision=1-16 \
+  --version 1.17.6 \
+  --set defaultRevision=1-17 \
   --kube-context=cluster-1
 ```
 
 * Install the `istiod` control plane 
 ```shell
-helm upgrade -i istiod-1-16 istio/istiod \
-  --set revision=1-16 \
-  --version 1.16.4 \
+helm upgrade -i istiod-1-17 istio/istiod \
+  --set revision=1-17 \
+  --version 1.17.6 \
   --namespace istio-system  \
   --kube-context=cluster-1 \
   --set "global.multiCluster.clusterName=cluster-1" \
@@ -52,11 +52,10 @@ helm upgrade -i istiod-1-16 istio/istiod \
 ```
 
 * Install the Istio eastwest gateway which is used for multi-cluster communication between clusters using mTLS.
-
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-16 \
-  --version 1.16.4 \
+  --set revision=1-17 \
+  --version 1.17.6 \
   --namespace istio-eastwest  \
   --kube-context=cluster-1 \
   -f data/eastwest-values.yaml
@@ -64,9 +63,9 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Install the Istio ingress gateway with a ClusterIP service type. For best proudction practices and to support multiple revisions a standalone Service will be created to allow easy migration of traffic.
 ```shell
-helm upgrade -i istio-ingressgateway-1-16 istio/gateway \
-  --set revision=1-16 \
-  --version 1.16.4 \
+helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
+  --set revision=1-17 \
+  --version 1.17.6 \
   --namespace istio-ingress  \
   --kube-context=cluster-1 \
   -f data/ingress-values.yaml
@@ -90,7 +89,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    istio: ingressgateway-1-16
+    istio: ingressgateway-1-17
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.
@@ -134,16 +133,16 @@ kubectl apply --context cluster-2 -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.16.4 \
-  --set defaultRevision=1-16 \
+  --version 1.17.6 \
+  --set defaultRevision=1-17 \
   --kube-context=cluster-2
 ```
 
 * Install the `istiod` control plane 
 ```shell
-helm upgrade -i istiod-1-16 istio/istiod \
-  --set revision=1-16 \
-  --version 1.16.4 \
+helm upgrade -i istiod-1-17 istio/istiod \
+  --set revision=1-17 \
+  --version 1.17.6 \
   --namespace istio-system  \
   --kube-context=cluster-2 \
   --set "global.multiCluster.clusterName=cluster-2" \
@@ -154,8 +153,8 @@ helm upgrade -i istiod-1-16 istio/istiod \
 * Install istio eastwest gateway
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-16 \
-  --version 1.16.4 \
+  --set revision=1-17 \
+  --version 1.17.6 \
   --namespace istio-eastwest  \
   --kube-context=cluster-2 \
   -f data/eastwest-values.yaml

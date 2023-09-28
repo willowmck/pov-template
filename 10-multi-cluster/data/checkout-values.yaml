@@ -3,9 +3,9 @@
 # Declare variables to be passed into your templates.
 clusterName: 'cluster-2'
 endpoints:
-  productCatalogService: 'product-catalog.app-team.demo.example.com:80'
-  currencyService: 'currency.app-team.demo.example.com:80'
-  cartService: 'cart.app-team.demo.example.com:80'
+  productCatalogService: 'product-catalog.app-team.tcb.mesh:80'
+  currencyService: 'currency.app-team.tcb.mesh:80'
+  cartService: 'cart.app-team.tcb.mesh:80'
 images:
   repository: us-central1-docker.pkg.dev/field-engineering-us/online-boutique
   # Overrides the image tag whose default is the chart appVersion.

@@ -7,10 +7,16 @@ rateLimiter:
   rateLimiter:
     image:
       registry: gcr.io/gloo-mesh
-      tag: 0.8.0
+      tag: 0.9.3
   redis:
     image:
       registry: docker.io
       tag: 7.0.11-alpine
 extAuthService:
   enabled: true
+  extAuth:
+    image:
+      # Image registry.
+      registry: gcr.io/gloo-mesh
+      # Version tag for the container.
+      tag: 0.47.1

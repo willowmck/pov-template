@@ -8,7 +8,7 @@ glooMgmtServer:
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-mgmt-server
-    tag: 2.3.9
+    tag: 2.4.1
   relay:
     # Push RBAC resources to the management server. Required for multicluster RBAC in the Gloo UI.
     pushRbac: true
@@ -26,7 +26,7 @@ glooUi:
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-apiserver
-    tag: 2.3.9
+    tag: 2.4.1
   sidecars:
     console:
       # Container image.
@@ -36,7 +36,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-ui
         # Version tag for the container image.
-        tag: 2.3.9
+        tag: 2.4.1
     envoy:
       # Container image.
       image:
@@ -45,7 +45,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-envoy
         # Version tag for the container image.
-        tag: 2.3.9
+        tag: 2.4.1
 # Gloo Platform Redis configuration options.
 redis:
   deployment:
@@ -62,13 +62,13 @@ prometheus:
     image:
       # Image registry.
       registry: quay.io/prometheus/prometheus
-      tag: v2.36.2
+      tag: v2.45.0
 # OTLP collector for workload cluster collectors
 telemetryGateway:
   enabled: true
   image:
     repository: gcr.io/gloo-mesh/gloo-otel-collector
-    tag: 2.3.9
+    tag: 2.4.1
   service:
     type: LoadBalancer
     annotations:
@@ -80,7 +80,7 @@ telemetryGateway:
 telemetryGatewayCustomization:
   extraExporters:
     otlp/tracing:
-      endpoint: jaeger-collector.gloo-mesh.svc.cluster.local:4317
+      endpoint: gloo-jaeger-collector.gloo-mesh.svc.cluster.local:4317
       tls:
         insecure: true
   extraPipelines:
@@ -91,3 +91,9 @@ telemetryGatewayCustomization:
       - batch
       exporters: 
       - otlp/tracing
+# Configuration for the Gloo Platform Jaeger instance. See the [Jaeger Helm chart](https://github.com/jaegertracing/helm-charts/blob/main/charts/jaeger/values.yaml) for the complete set of values.
+jaeger:
+  enabled: true
+demo:
+  # Enable tracing demo configuration. Jaeger should also be enabled under 'jaeger.enabled' during mgmt cluster installation.
+  tracingEnabled: true

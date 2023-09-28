@@ -4,11 +4,15 @@ metadata:
   name: currency
 spec:
   hosts:
-  - currency.app-team.demo.example.com
+  - currency.app-team.tcb.mesh
   services:
   - labels:
       app: currencyservice
   ports:
+  - number: 81
+    protocol: HTTP
+    targetPort:
+      name: http
   - number: 80
     protocol: GRPC
     targetPort:
@@ -20,11 +24,15 @@ metadata:
   name: product-catalog
 spec:
   hosts:
-  - product-catalog.app-team.demo.example.com
+  - product-catalog.app-team.tcb.mesh
   services:
   - labels:
       app: productcatalogservice
   ports:
+  - number: 81
+    protocol: HTTP
+    targetPort:
+      name: http
   - number: 80
     protocol: GRPC
     targetPort:
@@ -36,7 +44,7 @@ metadata:
   name: cart
 spec:
   hosts:
-  - cart.app-team.demo.example.com
+  - cart.app-team.tcb.mesh
   services:
   - labels:
       app: cartservice
@@ -52,11 +60,15 @@ metadata:
   name: recommendations
 spec:
   hosts:
-  - recommendations.app-team.demo.example.com
+  - recommendations.app-team.tcb.mesh
   services:
   - labels:
       app: recommendationservice
   ports:
+  - number: 81
+    protocol: HTTP
+    targetPort:
+      name: http
   - number: 80
     protocol: GRPC
     targetPort:
@@ -68,11 +80,15 @@ metadata:
   name: email
 spec:
   hosts:
-  - email.app-team.demo.example.com
+  - email.app-team.tcb.mesh
   services:
   - labels:
       app: emailservice
   ports:
+  - number: 81
+    protocol: HTTP
+    targetPort:
+      name: http
   - number: 80
     protocol: GRPC
     targetPort:

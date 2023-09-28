@@ -13,7 +13,7 @@ kubectl apply --context cluster-1 -f data/namespaces.yaml
 helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
   --namespace gloo-platform-addons \
   --kube-context=cluster-1 \
-  --version 2.3.9 \
+  --version 2.4.1 \
   -f data/gloo-platform-addons.yaml
 ```
 

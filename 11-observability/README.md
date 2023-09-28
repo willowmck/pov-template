@@ -70,17 +70,6 @@ Distributed tracing helps you track requests across multiple services in your di
 
 ![Gloo Platform Tracing](images/jaeger.png)
 
-* Deploy Jaeger to the `management` cluster
-```shell
-helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
-helm repo update
-
-helm upgrade -i jaeger jaegertracing/jaeger \
-  --kube-context management \
-  --version 0.71.7 \
-  --namespace gloo-mesh \
-  -f data/jaeger-values.yaml
-```
 
 * Create a service for Istio to send metrics
 ```shell
@@ -105,6 +94,7 @@ spec:
   accessLogging:
   - providers:
     - name: envoyOtelAls
+    - name: envoy
 EOF
 kubectl apply --context cluster-2 -f - <<EOF
 apiVersion: telemetry.istio.io/v1alpha1
@@ -121,15 +111,14 @@ spec:
   accessLogging:
   - providers:
     - name: envoyOtelAls
+    - name: envoy
 EOF
 ```
 
-* Open Jaeger and observe tracing
+* Open the Gloo Platform Dashboard and click on `Tracing` tab
 ```shell
-kubectl port-forward svc/jaeger-query --context management -n gloo-mesh 9081:16686
-echo "Jaeger available at http://localhost:9081"
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
+echo "Gloo UI: http://localhost:8090"
 ```
-
-* Open browser at http://localhost:9081
 
 * Select service `frontend.online-boutique` and then click `Find Traces`
