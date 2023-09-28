@@ -36,7 +36,7 @@ helm upgrade -i istio-base istio/base \
   -n istio-system \
   --version 1.17.6 \
   --set defaultRevision=1-17 \
-  --kube-context=cluster-1
+  --kube-context=shared
 ```
 
 * Install the `istiod` control plane 
@@ -45,7 +45,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-system  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   --set "global.multiCluster.clusterName=cluster-1" \
   --set "meshConfig.trustDomain=cluster-1" \
   -f data/istiod-values.yaml
@@ -57,7 +57,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   -f data/eastwest-values.yaml
 ```
 
@@ -67,7 +67,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-ingress  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   -f data/ingress-values.yaml
 ```
 
@@ -135,7 +135,7 @@ helm upgrade -i istio-base istio/base \
   -n istio-system \
   --version 1.17.6 \
   --set defaultRevision=1-17 \
-  --kube-context=cluster-2
+  --kube-context=lob-01
 ```
 
 * Install the `istiod` control plane 
@@ -144,7 +144,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-system  \
-  --kube-context=cluster-2 \
+  --kube-context=lob-01 \
   --set "global.multiCluster.clusterName=cluster-2" \
   --set "meshConfig.trustDomain=cluster-2" \
   -f data/istiod-values.yaml
@@ -156,7 +156,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-2 \
+  --kube-context=lob-01 \
   -f data/eastwest-values.yaml
 ```
 

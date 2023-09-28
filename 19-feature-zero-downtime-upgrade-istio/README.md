@@ -17,7 +17,7 @@ Links:
 ```shell
 helm upgrade --install istio-base istio/base \
   -n istio-system \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   --version 1.17.2 \
   --set defaultRevision=1-17
 
@@ -25,7 +25,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-system  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   --set "global.multiCluster.clusterName=cluster-1" \
   --set "meshConfig.trustDomain=cluster-1" \
   -f data/istiod-values.yaml
@@ -39,7 +39,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   -f data/eastwest-values.yaml
 ```
 
@@ -49,7 +49,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-ingress  \
-  --kube-context=cluster-1 \
+  --kube-context=shared \
   -f data/ingress-values.yaml
 ```
 
@@ -100,11 +100,11 @@ kubectl rollout restart deploy --context shared -n gloo-platform-addons
 ```shell
 helm uninstall istio-ingressgateway-1-16 \
   --namespace istio-ingress  \
-  --kube-context=cluster-1
+  --kube-context=shared
 
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=cluster-1
+  --kube-context=shared
 ```
 
 * Verify only Istio 1-17 is running
@@ -117,7 +117,7 @@ istioctl proxy-status --context shared
 * Upgrade Istiod to 1-17 components
 ```shell
 helm upgrade --install istio-base istio/base \
-  --kube-context=cluster-2 \
+  --kube-context=lob-01 \
   -n istio-system \
   --version 1.17.2 \
   --set defaultRevision=1-17
@@ -126,7 +126,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-system  \
-  --kube-context=cluster-2 \
+  --kube-context=lob-01 \
   --set "global.multiCluster.clusterName=cluster-2" \
   --set "meshConfig.trustDomain=cluster-2" \
   -f data/istiod-values.yaml
@@ -139,7 +139,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
-  --kube-context=cluster-2 \
+  --kube-context=lob-01 \
   -f data/eastwest-values.yaml
 ```
 
@@ -156,7 +156,7 @@ kubectl rollout restart deploy --context lob-01 -n checkout-apis
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=cluster-2
+  --kube-context=lob-01
 ```
 
 * Verify only Istio 1-17 is running
