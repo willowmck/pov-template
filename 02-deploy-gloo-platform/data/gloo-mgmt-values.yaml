@@ -1,6 +1,6 @@
 common:
   # Name of the cluster. Be sure to modify this value to match your cluster's name.
-  cluster: "management"
+  cluster: "mgmt"
 # Configuration for the Gloo management server.
 glooMgmtServer:
   enabled: true

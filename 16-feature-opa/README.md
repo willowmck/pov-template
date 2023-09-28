@@ -5,7 +5,7 @@
 OPA policies are written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/). Based on the older query languages Prolog and Datalog, Rego extends support to more modern document models such as JSON.
 * Reminder to set the `GLOO_GATEWAY_HTTPS` environment variable
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
@@ -36,12 +36,12 @@ EOF
 
 * Create configmap for the policy
 ```shell
-kubectl create configmap allow-currency-admin --from-file=policy.rego --context cluster-1 -n online-boutique
+kubectl create configmap allow-currency-admin --from-file=policy.rego --context shared -n online-boutique
 ```
 
 * Create an `ExtAuthPolicy` that validates incoming requests against the OPA policy
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: ExtAuthPolicy
 metadata:

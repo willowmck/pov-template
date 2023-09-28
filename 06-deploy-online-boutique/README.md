@@ -7,17 +7,17 @@ The Online Boutique applicaion is a set of microservices that make up an online 
 
 * Create the Online Boutique namespaces
 ```shell
-kubectl apply --context cluster-1 -f data/namespaces.yaml
+kubectl apply --context shared -f data/namespaces.yaml
 ```
 * Deploy online boutique into cluster-1
 ```shell
 helm upgrade -i online-boutique --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --namespace online-boutique  \
-  --kube-context cluster-1 \
+  --kube-context shared \
   -f data/values.yaml
 ```
 
 * Verify pods are running
 ```bash
-kubectl get pods -n online-boutique --context cluster-1
+kubectl get pods -n online-boutique --context shared
 ```

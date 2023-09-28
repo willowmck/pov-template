@@ -55,7 +55,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
 
 * Update the standalone Kubernetes service send traffic to the new Istio ingressgateway.
 ```shell
-kubectl apply --context cluster-1 -f - <<EOF
+kubectl apply --context shared -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -90,10 +90,10 @@ EOF
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context cluster-1 -n online-boutique
-kubectl rollout restart deploy --context cluster-1 -n online-boutique
-kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context cluster-1 -n online-boutique
-kubectl rollout restart deploy --context cluster-1 -n gloo-platform-addons
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context shared -n online-boutique
+kubectl rollout restart deploy --context shared -n online-boutique
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context shared -n online-boutique
+kubectl rollout restart deploy --context shared -n gloo-platform-addons
 ```
 
 * Remove Istio 
@@ -109,7 +109,7 @@ helm uninstall istiod-1-16 \
 
 * Verify only Istio 1-17 is running
 ```shell
-istioctl proxy-status --context cluster-1
+istioctl proxy-status --context shared
 ```
 
 ## Upgrade Istio using Helm in Cluster: cluster-2
@@ -145,11 +145,11 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context cluster-2 -n online-boutique
-kubectl rollout restart deploy --context cluster-2 -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context lob-01 -n online-boutique
+kubectl rollout restart deploy --context lob-01 -n online-boutique
 
-kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context cluster-2 -n checkout-apis
-kubectl rollout restart deploy --context cluster-2 -n checkout-apis
+kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context lob-01 -n checkout-apis
+kubectl rollout restart deploy --context lob-01 -n checkout-apis
 ```
 
 * Remove Istio 
@@ -161,7 +161,7 @@ helm uninstall istiod-1-16 \
 
 * Verify only Istio 1-17 is running
 ```shell
-istioctl proxy-status --context cluster-2
+istioctl proxy-status --context lob-01
 ```
 
 

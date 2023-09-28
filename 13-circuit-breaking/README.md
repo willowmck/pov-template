@@ -16,7 +16,7 @@ This lab will deploy the frontend application to both cluster-1 and cluster-2 an
 
 * Create online-boutique namespace in cluster-2
 ```shell
-kubectl apply --context cluster-2 -f - <<EOF
+kubectl apply --context lob-01 -f - <<EOF
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -29,7 +29,7 @@ EOF
 * Deploy frontend in cluster-2
 ```shell
 helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
-  --kube-context cluster-2 \
+  --kube-context lob-01 \
   --namespace online-boutique \
   --set clusterName=cluster-2 \
   -f  data/web-ui-values.yaml
@@ -39,7 +39,7 @@ helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/f
 
 * Create a VirtualDestination to represent both frontend applications.
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualDestination
 metadata:
@@ -61,7 +61,7 @@ EOF
 
 * Then update the ingress routing to route to the VirtualDestination
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -94,7 +94,7 @@ In order to enable locality based routing, you need to define some parameters to
 
 * Create a FailoverPolicy to setup an ordered list of endpoints. 
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: FailoverPolicy
 metadata:
@@ -113,7 +113,7 @@ EOF
 
 * Add an OutlierDetectionPolicy to set the conditions of when an endpoint is considered unhealthy.
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: OutlierDetectionPolicy
 metadata:
@@ -141,7 +141,7 @@ With the configurations in place, Gloo Platform will configure the ingress and p
 
 * Break frontend in cluster-1 so that it can no longer respond to traffic
 ```shell
-kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":["sleep","20h"],"readinessProbe":null,"livenessProbe":null}]}}}}' --context cluster-1 -n online-boutique
+kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":["sleep","20h"],"readinessProbe":null,"livenessProbe":null}]}}}}' --context shared -n online-boutique
 ```
 
 **NOTE:** You will see 2 errors before being failed over. These could have been avoided using a retry policy.
@@ -152,7 +152,7 @@ kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers"
 
 * Fix frontend in cluster-1
 ```shell
-kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":[],"readinessProbe":null,"livenessProbe":null}]}}}}' --context cluster-1 -n online-boutique
+kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":[],"readinessProbe":null,"livenessProbe":null}]}}}}' --context shared -n online-boutique
 ```
 
 * Refresh the Online Boutique and observe the traffic be redirected back to the cluster-1 frontend once it\'s healthy.

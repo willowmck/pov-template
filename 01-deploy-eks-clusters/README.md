@@ -88,21 +88,21 @@ helm repo update
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --kube-context cluster-1 \
+  --kube-context shared \
   --set clusterName=cluster-1 \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --kube-context cluster-2 \
+  --kube-context lob-01 \
   --set clusterName=cluster-2 \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --kube-context management \
+  --kube-context mgmt \
   --set clusterName=management \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller

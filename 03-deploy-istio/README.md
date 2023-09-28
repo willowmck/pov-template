@@ -27,7 +27,7 @@ helm repo update
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
-kubectl apply --context cluster-1 -f data/namespaces.yaml
+kubectl apply --context shared -f data/namespaces.yaml
 ```
 
 * Before installing Istio or upgrading the istio/base must be run to install or reconcile the CRDs within the kubernetes cluster. 
@@ -73,7 +73,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
 
 * Create the standalone Kubernetes service to sit in front of the Istio ingressgateway.
 ```shell
-kubectl apply --context cluster-1 -f - <<EOF
+kubectl apply --context shared -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -109,15 +109,15 @@ EOF
 
 * Verify pods are running
 ```bash
-kubectl get pods --context cluster-1 -n istio-system
-kubectl get pods --no-headers --context cluster-1 -n istio-ingress
-kubectl get pods --no-headers --context cluster-1 -n istio-eastwest
+kubectl get pods --context shared -n istio-system
+kubectl get pods --no-headers --context shared -n istio-ingress
+kubectl get pods --no-headers --context shared -n istio-eastwest
 ```
 
 * Verify the load balancer is created`
 ```shell
-kubectl get service --context cluster-1 -n istio-ingress
-kubectl get service --context cluster-1 -n istio-eastwest
+kubectl get service --context shared -n istio-ingress
+kubectl get service --context shared -n istio-eastwest
 ```
 
 ## Install Istio on Cluster: cluster-2
@@ -126,7 +126,7 @@ kubectl get service --context cluster-1 -n istio-eastwest
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
-kubectl apply --context cluster-2 -f data/namespaces.yaml
+kubectl apply --context lob-01 -f data/namespaces.yaml
 ```
 
 * Install the Istio specific CRDs
@@ -162,13 +162,13 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Verify pods are running
 ```bash
-kubectl get pods --context cluster-2 -n istio-system
-kubectl get pods --no-headers --context cluster-2 -n istio-ingress
-kubectl get pods --no-headers --context cluster-2 -n istio-eastwest
+kubectl get pods --context lob-01 -n istio-system
+kubectl get pods --no-headers --context lob-01 -n istio-ingress
+kubectl get pods --no-headers --context lob-01 -n istio-eastwest
 ```
 
 * Verify the load balancer is created`
 ```shell
-kubectl get service --context cluster-2 -n istio-ingress
-kubectl get service --context cluster-2 -n istio-eastwest
+kubectl get service --context lob-01 -n istio-ingress
+kubectl get service --context lob-01 -n istio-eastwest
 ```

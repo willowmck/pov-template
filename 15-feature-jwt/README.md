@@ -9,7 +9,7 @@ Links:
 - [JWTPolicy API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/jwt_policy/)
 * Reminder to set the `GLOO_GATEWAY_HTTPS` environment variable
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context cluster-1 -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
@@ -35,7 +35,7 @@ curl -k "https://$GLOO_GATEWAY_HTTPS/currencies/convert" \
 ```
 * Since the Auth0 servers are not known to Gloo Platform, create an ExternalService reference.
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: ExternalService
 metadata:
@@ -54,7 +54,7 @@ EOF
 
 * Enable JWT Authentication for the currency routes
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: JWTPolicy
 metadata:
@@ -114,5 +114,5 @@ curl -vk -H "Authorization: Bearer $ACCESS_TOKEN" https://$GLOO_GATEWAY_HTTPS/cu
 
 * Cleanup JWT policy 
 ```
-kubectl delete jwtpolicy currency --context management -n app-team
+kubectl delete jwtpolicy currency --context mgmt -n app-team
 ```

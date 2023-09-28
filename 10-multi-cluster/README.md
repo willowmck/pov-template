@@ -13,14 +13,14 @@ Links:
 ![Checkout APIs](images/checkout-apis.png)
 * Create `checkout-apis ` namespace in cluster-2
 ```shell
-kubectl apply --context cluster-2 -f data/namespaces.yaml
+kubectl apply --context lob-01 -f data/namespaces.yaml
 ```
 
 * Deploy checkout APIs to cluster-2
 ```shell
 helm upgrade -i checkout-apis --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --namespace checkout-apis  \
-  --kube-context cluster-2 \
+  --kube-context lob-01 \
 -f data/checkout-values.yaml
 ```
 
@@ -30,12 +30,12 @@ The checkout APIs will be managed by the `checkout-team` in cluster-2. To repres
 
 * Create administration namespace for checkout-team
 ```shell
-kubectl create namespace checkout-team --context management
+kubectl create namespace checkout-team --context mgmt
 ```
 
 * Create workspace for checkout-team
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: Workspace
 metadata:
@@ -77,7 +77,7 @@ EOF
 
 * Update app-team Workspace to import checkout apis
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: WorkspaceSettings
 metadata:
@@ -106,7 +106,7 @@ EOF
 
 * View workspace in Gloo Mesh UI
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mgmt -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 
@@ -116,7 +116,7 @@ In order to facilitate multi-cluster routing, Gloo Platform `VirtualDestinations
 
 * Create Global Services for checkout-apis
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualDestination
 metadata:
@@ -163,14 +163,14 @@ EOF
 
 * Create Global Services for app team apis
 ```shell
-kubectl apply --context management -n app-team -f data/app-team-global-services.yaml
+kubectl apply --context mgmt -n app-team -f data/app-team-global-services.yaml
 ```
 
 * Update frontend to call checkout global services.
 ```shell
 helm upgrade -i online-boutique --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --namespace online-boutique  \
-  --kube-context cluster-1 \
+  --kube-context shared \
   -f data/frontend-values.yaml
 ```
 
@@ -183,7 +183,7 @@ Due to the `app-team` and `checkout-team` employing zero trust architectures, th
 
 * Allow app-team to use checkout apis
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:
@@ -247,7 +247,7 @@ EOF
 
 * Allow checkout team to use app team apis
 ```shell
-kubectl apply --context management -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:

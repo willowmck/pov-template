@@ -1,5 +1,5 @@
 # Create admin policy
-kubectl --context="management" exec -n vault vault-0 -- /bin/sh -c 'vault policy write admin - <<EOF
+kubectl --context="mgmt" exec -n vault vault-0 -- /bin/sh -c 'vault policy write admin - <<EOF
 # Read system health check
 path "sys/health"
 {
@@ -56,8 +56,8 @@ path "pki*" {
 }
 EOF'
 # Enable Vault userpass.
-kubectl --context="management" exec -n vault vault-0 -- /bin/sh -c 'vault auth enable userpass'
+kubectl --context="mgmt" exec -n vault vault-0 -- /bin/sh -c 'vault auth enable userpass'
 # Set the Kubernetes Auth config for Vault to the mounted token.
-kubectl --context="management" exec -n vault vault-0 -- /bin/sh -c 'vault write auth/userpass/users/admin \
+kubectl --context="mgmt" exec -n vault vault-0 -- /bin/sh -c 'vault write auth/userpass/users/admin \
   password=admin \
   policies=admin'
