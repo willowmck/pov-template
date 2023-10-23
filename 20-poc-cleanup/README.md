@@ -19,23 +19,23 @@ helm uninstall toys-catalog \
   --kube-context web
 ```
 
-* Remove the Online Boutique Applications in lob-01
+* Remove the Online Boutique Applications in lob
 ```shell
 helm uninstall ha-frontend \
   --namespace online-boutique \
-  --kube-context lob-01
+  --kube-context lob
 
 helm uninstall checkout-apis \
   --namespace checkout-apis \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Delete the namespaces
 ```shell
 kubectl delete namespace online-boutique --context web
 
-kubectl delete namespace online-boutique --context lob-01
-kubectl delete namespace checkout-apis --context lob-01
+kubectl delete namespace online-boutique --context lob
+kubectl delete namespace checkout-apis --context lob
 ```
 
 ## Clean up Gloo Addons
@@ -60,8 +60,8 @@ helm ls -n istio-system --kube-context web
 helm ls -n istio-ingress --kube-context web
 helm ls -n istio-eastwest --kube-context web
 
-helm ls -n istio-system --kube-context lob-01
-helm ls -n istio-eastwest --kube-context lob-01
+helm ls -n istio-system --kube-context lob
+helm ls -n istio-eastwest --kube-context lob
 ```
 
 * Uninstall the gateways in shared
@@ -90,36 +90,36 @@ helm uninstall istiod-1-17 \
   --kube-context web
 ```
 
-* Uninstall the gateways in lob-01
+* Uninstall the gateways in lob
 ```shell
 helm uninstall istio-eastwestgateway \
   --namespace istio-eastwest \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Uninstall the control plane in shared
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system \
-  --kube-context lob-01
+  --kube-context lob
 
 helm uninstall istiod-1-17 \
   --namespace istio-system \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Remove the CRDS **NOTE** Make sure other teams are not using Istio on the cluster
 ```shell
 helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context web -f -
 
-helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context lob-01 -f -
+helm template istio-base istio/base --namespace istio-system --include-crds | kubectl delete --context lob -f -
 ```
 
 * Cleanup the namespaces
 ```shell
 kubectl delete namespace istio-system --context web
 
-kubectl delete namespace istio-system --context lob-01
+kubectl delete namespace istio-system --context lob
 ```
 
 ## Clean Up Gloo Platform
@@ -132,7 +132,7 @@ helm uninstall gloo-agent \
 
 helm uninstall gloo-agent \
   --namespace gloo-mesh \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Remove Gloo CRDs
@@ -143,14 +143,14 @@ helm uninstall gloo-platform-crds \
 
 helm uninstall gloo-platform-crds \
   --namespace gloo-mesh \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Delete gloo-mesh namespaces
 ```shell
 kubectl delete namespace gloo-mesh --context web
 
-kubectl delete namespace gloo-mesh --context lob-01
+kubectl delete namespace gloo-mesh --context lob
 ```
 
 * Remove the Workspace namespaces in management cluster
@@ -199,7 +199,7 @@ helm uninstall cert-manager \
 
 helm uninstall cert-manager \
   --namespace cert-manager \
-  --kube-context lob-01
+  --kube-context lob
 ```
 
 * Cleanup cert-manager namespace

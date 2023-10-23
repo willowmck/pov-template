@@ -74,7 +74,7 @@ Distributed tracing helps you track requests across multiple services in your di
 * Create a service for Istio to send metrics
 ```shell
 kubectl apply --context web -f data/tracing-service.yaml
-kubectl apply --context lob-01 -f data/tracing-service.yaml
+kubectl apply --context lob -f data/tracing-service.yaml
 ```
 
 * Enable Tracing within each cluster
@@ -96,7 +96,7 @@ spec:
     - name: envoyOtelAls
     - name: envoy
 EOF
-kubectl apply --context lob-01 -f - <<EOF
+kubectl apply --context lob -f - <<EOF
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:

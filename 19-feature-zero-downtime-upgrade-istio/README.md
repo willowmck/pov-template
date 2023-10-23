@@ -112,12 +112,12 @@ helm uninstall istiod-1-16 \
 istioctl proxy-status --context web
 ```
 
-## Upgrade Istio using Helm in Cluster: lob-01
+## Upgrade Istio using Helm in Cluster: lob
 
 * Upgrade Istiod to 1-17 components
 ```shell
 helm upgrade --install istio-base istio/base \
-  --kube-context=lob-01 \
+  --kube-context=lob \
   -n istio-system \
   --version 1.17.2 \
   --set defaultRevision=1-17
@@ -126,9 +126,9 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-system  \
-  --kube-context=lob-01 \
-  --set "global.multiCluster.clusterName=lob-01" \
-  --set "meshConfig.trustDomain=lob-01" \
+  --kube-context=lob \
+  --set "global.multiCluster.clusterName=lob" \
+  --set "meshConfig.trustDomain=lob" \
   -f data/istiod-values.yaml
 
 ```
@@ -139,29 +139,29 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
-  --kube-context=lob-01 \
+  --kube-context=lob \
   -f data/eastwest-values.yaml
 ```
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context lob-01 -n online-boutique
-kubectl rollout restart deploy --context lob-01 -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context lob -n online-boutique
+kubectl rollout restart deploy --context lob -n online-boutique
 
-kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context lob-01 -n checkout-apis
-kubectl rollout restart deploy --context lob-01 -n checkout-apis
+kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context lob -n checkout-apis
+kubectl rollout restart deploy --context lob -n checkout-apis
 ```
 
 * Remove Istio 
 ```shell
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=lob-01
+  --kube-context=lob
 ```
 
 * Verify only Istio 1-17 is running
 ```shell
-istioctl proxy-status --context lob-01
+istioctl proxy-status --context lob
 ```
 
 

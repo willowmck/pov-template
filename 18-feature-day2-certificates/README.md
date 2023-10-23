@@ -38,7 +38,7 @@ helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.12.2 \
-  --kube-context lob-01 \
+  --kube-context lob \
   -f data/cert-manager-values.yaml
 ```
 
@@ -46,7 +46,7 @@ helm install cert-manager jetstack/cert-manager \
 ```shell
 kubectl wait deployment --for condition=Available=True --all --context mamagement -n cert-manager
 kubectl wait deployment --for condition=Available=True --all --context web -n cert-manager
-kubectl wait deployment --for condition=Available=True --all --context lob-01 -n cert-manager
+kubectl wait deployment --for condition=Available=True --all --context lob -n cert-manager
 ```
 ## Self Signed Root Cert
 
@@ -56,21 +56,21 @@ This lab will use a self signed root certificate for all relay and workload cert
 ```shell
 kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context mamagement -n cert-manager
 kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context web -n cert-manager
-kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context lob-01 -n cert-manager
+kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context lob -n cert-manager
 ```
 
 * Create a ClusterIssuer for the root secret
 ```shell
 kubectl apply --context mamagement -n cert-manager -f data/secret-issuer.yaml
 kubectl apply --context web -n cert-manager -f data/secret-issuer.yaml
-kubectl apply --context lob-01 -n cert-manager -f data/secret-issuer.yaml
+kubectl apply --context lob -n cert-manager -f data/secret-issuer.yaml
 ```
 
 * Verify the issuers 
 ```bash
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context mamagement -n cert-manager
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context web -n cert-manager
-kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob-01 -n cert-manager
+kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob -n cert-manager
 ```
 
 ## Cluster: mgmt Configuration
@@ -302,16 +302,16 @@ kubectl rollout restart deploy --context web -n gloo-platform-addons
 kubectl rollout restart deploy -n online-boutique --context web
 ```
 
-## Cluster: lob-01 Configuration
+## Cluster: lob Configuration
 
 * Verify issuers is correctly setup
 ```shell
-kubectl get clusterissuer --context lob-01 -n cert-manager
+kubectl get clusterissuer --context lob -n cert-manager
 ```
 
 * Create certificates for Gloo Agent, Telemetry Gateway and Istio if needed
 ```shell
-kubectl apply --context lob-01 -f - <<EOF
+kubectl apply --context lob -f - <<EOF
 kind: Certificate
 apiVersion: cert-manager.io/v1
 metadata:
@@ -321,7 +321,7 @@ spec:
   commonName: gloo-agent
   dnsNames:
     # Must match the cluster name used in the install
-    - "lob-01"
+    - "lob"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -370,7 +370,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonname: lob-01.demo.example.com
+  commonname: lob.demo.example.com
   isCA: true
   usages:
     - digital signature
@@ -386,20 +386,20 @@ EOF
 
 * Verify certificates were created
 ```shell
-kubectl get certificates --context lob-01 -n gloo-mesh
-kubectl get certificates --context lob-01 -n istio-system
+kubectl get certificates --context lob -n gloo-mesh
+kubectl get certificates --context lob -n istio-system
 ```
 
 **Note** if certificates were not generated it may be beneficial to look at the cert manager logs.
 ```shell
-kubectl logs deploy/cert-manager --context lob-01 -n cert-manager
-kubectl logs deploy/cert-manager-istio-csr --context lob-01 -n cert-manager
+kubectl logs deploy/cert-manager --context lob -n cert-manager
+kubectl logs deploy/cert-manager-istio-csr --context lob -n cert-manager
 ```
 * Cleanup old Gloo certificates and allow cert-manager to replace them
 ```shell
-kubectl delete secret relay-client-tls-secret --context lob-01 -n gloo-mesh
-kubectl delete secret relay-root-tls-secret --context lob-01 -n gloo-mesh
-kubectl delete secret relay-identity-token-secret --context lob-01 -n gloo-mesh
+kubectl delete secret relay-client-tls-secret --context lob -n gloo-mesh
+kubectl delete secret relay-root-tls-secret --context lob -n gloo-mesh
+kubectl delete secret relay-identity-token-secret --context lob -n gloo-mesh
 ```
 
 * Update the Gloo Platform to use the new certificates
@@ -407,14 +407,14 @@ kubectl delete secret relay-identity-token-secret --context lob-01 -n gloo-mesh
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
   --version=2.3.9  \
   --namespace gloo-mesh \
-  --kube-context lob-01 \
+  --kube-context lob \
   --reuse-values \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify Gloo Agent connectivity
 ```shell
-kubectl logs deploy/gloo-mesh-agent --context lob-01 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context lob -n gloo-mesh
 ```
 
 * Update Istio to use new CA certificate
@@ -424,29 +424,29 @@ kubectl delete secret cacerts --context web -n istio-system
 
 * Verify new cacerts is generated
 ```shell
-kubectl get secret cacerts --context lob-01 -n istio-system
+kubectl get secret cacerts --context lob -n istio-system
 ```
 
 * Restart Istiod to pick up new certificate
 ```shell
-kubectl rollout restart deploy --context lob-01 -n istio-system
+kubectl rollout restart deploy --context lob -n istio-system
 ```
 
 * Verify new certificate is picked up by istiod
 ```shell
-kubectl logs -l app=istiod --tail 500 --context lob-01 -n istio-system| grep x509
+kubectl logs -l app=istiod --tail 500 --context lob -n istio-system| grep x509
 ```
 
 * Restart Gateways
 ```shell
-kubectl rollout restart deploy --context lob-01 -n istio-ingress
-kubectl rollout restart deploy --context lob-01 -n istio-eastwest
+kubectl rollout restart deploy --context lob -n istio-ingress
+kubectl rollout restart deploy --context lob -n istio-eastwest
 ```
 
 * Restart workloads
 ```shell 
-kubectl rollout restart deploy -n online-boutique --context lob-01
-kubectl rollout restart deploy -n checkout-apis --context lob-01
+kubectl rollout restart deploy -n online-boutique --context lob
+kubectl rollout restart deploy -n checkout-apis --context lob
 ```
 * Verify that the Gloo UI appears to be healthy
 * Open the Gloo UI and observe the agents are connected and service discovery is working

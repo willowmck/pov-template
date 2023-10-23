@@ -97,7 +97,7 @@ spec:
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: lob-01
+  name: lob
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local
@@ -144,43 +144,43 @@ kubectl logs deploy/gloo-mesh-agent --context web -n gloo-mesh
 kubectl logs ds/gloo-telemetry-collector-agent --context web -n gloo-mesh
 ```
 
-## Install Gloo Agent on Cluster: lob-01
+## Install Gloo Agent on Cluster: lob
 
-* Create the `gloo-mesh` namespace in cluster lob-01
+* Create the `gloo-mesh` namespace in cluster lob
 ```shell
-kubectl create namespace gloo-mesh --context lob-01
+kubectl create namespace gloo-mesh --context lob
 ```
 
 * Add the authentication token and root TLS certificate
 ```shell
-kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context lob-01 -n gloo-mesh
-kubectl create secret generic relay-identity-token-secret --from-file token=token --context lob-01 -n gloo-mesh
+kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context lob -n gloo-mesh
+kubectl create secret generic relay-identity-token-secret --from-file token=token --context lob -n gloo-mesh
 ```
-* Install the Gloo Agent in lob-01
+* Install the Gloo Agent in lob
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.1 \
   --namespace=gloo-mesh \
-  --kube-context lob-01
+  --kube-context lob
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
   --version=2.4.1 \
   --namespace gloo-mesh \
-  --kube-context lob-01 \
+  --kube-context lob \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=lob-01 \
+  --set common.cluster=lob \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
 
 * Verify the `gloo-mesh-agent` logs
 ```bash
-kubectl logs deploy/gloo-mesh-agent --context lob-01 -n gloo-mesh
+kubectl logs deploy/gloo-mesh-agent --context lob -n gloo-mesh
 ```
 
 * Verify the `gloo-telemetry-collector` logs
 ```bash
-kubectl logs ds/gloo-telemetry-collector-agent --context lob-01 -n gloo-mesh
+kubectl logs ds/gloo-telemetry-collector-agent --context lob -n gloo-mesh
 ```
 
 ## Verify connectivity in the Gloo Platform UI

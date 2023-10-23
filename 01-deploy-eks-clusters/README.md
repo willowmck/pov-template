@@ -95,7 +95,7 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
-  --kube-context lob-01 \
+  --kube-context lob \
   --set clusterName=cluster-2 \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 

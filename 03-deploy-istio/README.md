@@ -120,13 +120,13 @@ kubectl get service --context web -n istio-ingress
 kubectl get service --context web -n istio-eastwest
 ```
 
-## Install Istio on Cluster: lob-01
+## Install Istio on Cluster: lob
 
 ![Istio Components cluster-2](images/istio-cluster2.png)
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
-kubectl apply --context lob-01 -f data/namespaces.yaml
+kubectl apply --context lob -f data/namespaces.yaml
 ```
 
 * Install the Istio specific CRDs
@@ -135,7 +135,7 @@ helm upgrade -i istio-base istio/base \
   -n istio-system \
   --version 1.17.6 \
   --set defaultRevision=1-17 \
-  --kube-context=lob-01
+  --kube-context=lob
 ```
 
 * Install the `istiod` control plane 
@@ -144,9 +144,9 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-system  \
-  --kube-context=lob-01 \
-  --set "global.multiCluster.clusterName=lob-01" \
-  --set "meshConfig.trustDomain=lob-01" \
+  --kube-context=lob \
+  --set "global.multiCluster.clusterName=lob" \
+  --set "meshConfig.trustDomain=lob" \
   -f data/istiod-values.yaml
 ```
 
@@ -156,19 +156,19 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-eastwest  \
-  --kube-context=lob-01 \
+  --kube-context=lob \
   -f data/eastwest-values.yaml
 ```
 
 * Verify pods are running
 ```bash
-kubectl get pods --context lob-01 -n istio-system
-kubectl get pods --no-headers --context lob-01 -n istio-ingress
-kubectl get pods --no-headers --context lob-01 -n istio-eastwest
+kubectl get pods --context lob -n istio-system
+kubectl get pods --no-headers --context lob -n istio-ingress
+kubectl get pods --no-headers --context lob -n istio-eastwest
 ```
 
 * Verify the load balancer is created`
 ```shell
-kubectl get service --context lob-01 -n istio-ingress
-kubectl get service --context lob-01 -n istio-eastwest
+kubectl get service --context lob -n istio-ingress
+kubectl get service --context lob -n istio-eastwest
 ```

@@ -12,7 +12,7 @@ spec:
       - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
-      - name: lob-01
+      - name: lob
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
       istioOperatorSpec:

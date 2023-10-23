@@ -12,7 +12,7 @@ spec:
       - name: shared
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: false
-      - name: lob-01
+      - name: lob
         activeGateway: true
       istioOperatorSpec:
         # No control plane components are installed
