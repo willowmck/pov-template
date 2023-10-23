@@ -9,7 +9,7 @@ spec:
     - gatewayRevision: 1-16
       # List all workload clusters to install Istio into
       clusters:
-      - name: shared
+      - name: web
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: false
       - name: lob
@@ -65,7 +65,7 @@ spec:
     - gatewayRevision: 1-17
       # List all workload clusters to install Istio into
       clusters:
-      - name: shared
+      - name: web
         # If set to true, the spec for this revision is applied in the cluster
         activeGateway: true
       istioOperatorSpec:

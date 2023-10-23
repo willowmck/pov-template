@@ -9,7 +9,7 @@ spec:
     - revision: 1-16
       # List all workload clusters to install Istio into
       clusters:
-      - name: shared
+      - name: web
         # If set to true, the spec for this revision is applied in the cluster
         defaultRevision: true
       - name: lob

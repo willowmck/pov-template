@@ -1,7 +1,7 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  name: shared
+  name: web
   region: us-east-2
   version: "1.24"
 nodeGroups:

@@ -223,7 +223,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonname: shared.demo.example.com
+  commonname: web.demo.example.com
   isCA: true
   usages:
     - digital signature

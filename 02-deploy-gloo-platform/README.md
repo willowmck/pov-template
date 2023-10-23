@@ -89,7 +89,7 @@ kubectl apply --context mamagement -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: KubernetesCluster
 metadata:
-  name: shared
+  name: web
   namespace: gloo-mesh
 spec:
   clusterDomain: cluster.local
