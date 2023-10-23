@@ -27,7 +27,7 @@ helm repo update
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
-kubectl apply --context shared -f data/namespaces.yaml
+kubectl apply --context web -f data/namespaces.yaml
 ```
 
 * Before installing Istio or upgrading the istio/base must be run to install or reconcile the CRDs within the kubernetes cluster. 
@@ -73,7 +73,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
 
 * Create the standalone Kubernetes service to sit in front of the Istio ingressgateway.
 ```shell
-kubectl apply --context shared -f - <<EOF
+kubectl apply --context web -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -109,15 +109,15 @@ EOF
 
 * Verify pods are running
 ```bash
-kubectl get pods --context shared -n istio-system
-kubectl get pods --no-headers --context shared -n istio-ingress
-kubectl get pods --no-headers --context shared -n istio-eastwest
+kubectl get pods --context web -n istio-system
+kubectl get pods --no-headers --context web -n istio-ingress
+kubectl get pods --no-headers --context web -n istio-eastwest
 ```
 
 * Verify the load balancer is created`
 ```shell
-kubectl get service --context shared -n istio-ingress
-kubectl get service --context shared -n istio-eastwest
+kubectl get service --context web -n istio-ingress
+kubectl get service --context web -n istio-eastwest
 ```
 
 ## Install Istio on Cluster: lob-01

@@ -24,7 +24,7 @@ Gloo Platform uses a root trust policy to configure the relay server (gloo-mesh-
 
 * Fully managed option - Gloo Platform will generate a new Root CA and Intermediates for each clusers Istio deployments
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context mamagement -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: RootTrustPolicy
 metadata:

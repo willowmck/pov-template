@@ -16,7 +16,7 @@ The operations team is responsible for setting the ports and protocols of Gloo G
 
 * Configure Gloo Gateway ports and protocols using the Gloo `VirtualGateway` API. Delegate routing decisions to themselves, the `ops-team`
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context mamagement -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualGateway
 metadata:
@@ -46,7 +46,7 @@ EOF
 
 * Create a `RouteTable` to delegate traffic decisions to the application team. They will decide where the traffic ultimately flows. 
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context mamagement -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -75,7 +75,7 @@ Due to the Ops team delegating routing decisions to the App team, the App team n
 
 * Configure a `RouteTable` object to route to online-boutique frontend
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context mamagement -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -97,7 +97,7 @@ EOF
 ```
 * Access online-boutique
 ```shell
-export GLOO_GATEWAY=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):80
+export GLOO_GATEWAY=$(kubectl --context web -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):80
 
 echo "Online Boutique available at http://$GLOO_GATEWAY"
 ```
@@ -111,12 +111,12 @@ Most users need to secure traffic coming from outside their Kubernetes cluster. 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
    -keyout tls.key -out tls.crt -subj "/CN=*"
 
-kubectl create secret generic tls-secret --from-file=tls.key=tls.key --from-file=tls.crt=tls.crt --context shared -n istio-ingress
+kubectl create secret generic tls-secret --from-file=tls.key=tls.key --from-file=tls.crt=tls.crt --context web -n istio-ingress
 ```
 
 * Using the `VirtualGateway` API we can update the current configuration to expose traffic on port 443 using TLS.
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context mamagement -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualGateway
 metadata:
@@ -154,7 +154,7 @@ EOF
 
 * Access online-boutique with HTTPS
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context web -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```

@@ -55,7 +55,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
 
 * Update the standalone Kubernetes service send traffic to the new Istio ingressgateway.
 ```shell
-kubectl apply --context shared -f - <<EOF
+kubectl apply --context web -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -90,10 +90,10 @@ EOF
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context shared -n online-boutique
-kubectl rollout restart deploy --context shared -n online-boutique
-kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context shared -n online-boutique
-kubectl rollout restart deploy --context shared -n gloo-platform-addons
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context web -n online-boutique
+kubectl rollout restart deploy --context web -n online-boutique
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context web -n online-boutique
+kubectl rollout restart deploy --context web -n gloo-platform-addons
 ```
 
 * Remove Istio 
@@ -109,7 +109,7 @@ helm uninstall istiod-1-16 \
 
 * Verify only Istio 1-17 is running
 ```shell
-istioctl proxy-status --context shared
+istioctl proxy-status --context web
 ```
 
 ## Upgrade Istio using Helm in Cluster: lob-01

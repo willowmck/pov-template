@@ -25,7 +25,7 @@ For a detailed overview of what information you can find in the Gloo UI, see [Ex
 
 ![Gloo Platform Graph](images/gloo-platform-graph.png)
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mgmt -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 
@@ -51,7 +51,7 @@ Metrics provide important information about the health of the apps in your servi
 ![Prometheus Metrics](images/prometheus-metrics.png)
 * To view the raw metrics
 ```shell
-kubectl port-forward svc/prometheus-server --context mgmt -n gloo-mesh 9080:80
+kubectl port-forward svc/prometheus-server --context mamagement -n gloo-mesh 9080:80
 echo "Prometheus available at http://localhost:9080"
 ```
 
@@ -73,13 +73,13 @@ Distributed tracing helps you track requests across multiple services in your di
 
 * Create a service for Istio to send metrics
 ```shell
-kubectl apply --context shared -f data/tracing-service.yaml
+kubectl apply --context web -f data/tracing-service.yaml
 kubectl apply --context lob-01 -f data/tracing-service.yaml
 ```
 
 * Enable Tracing within each cluster
 ```shell
-kubectl apply --context shared -f - <<EOF
+kubectl apply --context web -f - <<EOF
 apiVersion: telemetry.istio.io/v1alpha1
 kind: Telemetry
 metadata:
@@ -117,7 +117,7 @@ EOF
 
 * Open the Gloo Platform Dashboard and click on `Tracing` tab
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mgmt -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 

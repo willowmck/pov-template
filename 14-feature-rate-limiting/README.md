@@ -18,12 +18,12 @@ Links:
 
 * To better view the ratelimiting, we are going to disable ciruit breaking it its enabled
 ```shell
-kubectl delete outlierdetectionpolicy outlier-detection --context mgmt -n app-team
+kubectl delete outlierdetectionpolicy outlier-detection --context mamagement -n app-team
 ```
 
 * Apply the RateLimitPolicy to enable rate limiting
 ```shell
-kubectl apply --context mgmt -f data/rate-limit-policy.yaml
+kubectl apply --context mamagement -f data/rate-limit-policy.yaml
 ```
 
 * Refresh UI a few times should see `x-envoy-ratelimited: [true]`
@@ -38,5 +38,5 @@ Trailers:
 
 * Remove the RateLimitPolicy
 ```shell
-kubectl delete --context mgmt -f data/rate-limit-policy.yaml
+kubectl delete --context mamagement -f data/rate-limit-policy.yaml
 ```

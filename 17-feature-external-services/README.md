@@ -9,7 +9,7 @@ Links:
   - [ExternalService API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/external_service/)
 * Reminder to set the `GLOO_GATEWAY_HTTPS` environment variable
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context web -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
@@ -18,12 +18,12 @@ echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 
 * Create an ExternalService reference to the external API. 
 ```shell
-kubectl apply --context mgmt -n app-team -f data/external-service.yaml
+kubectl apply --context mamagement -n app-team -f data/external-service.yaml
 ```
 
 * Update the RouteTable to route to the ExternalService
 ```shell
-kubectl apply --context mgmt -n app-team -f data/external-route-table.yaml
+kubectl apply --context mamagement -n app-team -f data/external-route-table.yaml
 ```
 
 * Curl and see the response from the external service

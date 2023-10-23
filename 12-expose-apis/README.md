@@ -5,7 +5,7 @@
 Next, lets see how easy it is to expose multiple applications. The Online Boutique frontend relies on a number of APIs to populate the UI. The product catalog API is responsible for displaying the available products and the currency API converts the cost of each product into the required denomination. To expose these apis, we will match on URI `prefix: /currencies` and send to the currency service and `prefix: /products` to the product catalog service.
 * Reminder to set the `GLOO_GATEWAY_HTTPS` environment variable
 ```shell
-export GLOO_GATEWAY_HTTPS=$(kubectl --context shared -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
+export GLOO_GATEWAY_HTTPS=$(kubectl --context web -n istio-ingress get svc -l istio=ingressgateway -o jsonpath='{.items[0].status.loadBalancer.ingress[0].*}'):443
 
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
@@ -16,7 +16,7 @@ echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 
 * Expose the currency API
 ```shell
-kubectl apply --context mgmt -f data/currency-route-table.yaml
+kubectl apply --context mamagement -f data/currency-route-table.yaml
 ```
 
 * Test the currency API
@@ -39,7 +39,7 @@ curl -k https://$GLOO_GATEWAY_HTTPS/currencies/convert \
 
 * Expose the product catalog API
 ```shell
-kubectl apply --context mgmt -f data/products-route-table.yaml
+kubectl apply --context mamagement -f data/products-route-table.yaml
 ```
 
 * Test requests to the product catalog API
@@ -53,12 +53,12 @@ The Gloo Gateway can also expose applications that do no reside in its own clust
 
 * Since the API is owned by the Checkout Team, the Ops team need to import their service to make it routable. 
 ```shell
-kubectl apply --context mgmt -f data/ops-team.yaml
+kubectl apply --context mamagement -f data/ops-team.yaml
 ```
 
 * Create the RouteTable pointing to the Shipping VirtualDestination
 ```shell
-kubectl apply --context mgmt -f data/shipping-route-table.yaml
+kubectl apply --context mamagement -f data/shipping-route-table.yaml
 ```
 
 * Test that the Gloo Gateway can reach the shipping service
