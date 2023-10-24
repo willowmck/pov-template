@@ -41,7 +41,7 @@ kubectl create configmap allow-currency-admin --from-file=policy.rego --context 
 
 * Create an `ExtAuthPolicy` that validates incoming requests against the OPA policy
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: ExtAuthPolicy
 metadata:

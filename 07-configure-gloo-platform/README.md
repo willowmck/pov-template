@@ -12,12 +12,12 @@ Links:
 
 * Create administrative namespace for ops-team
 ```shell
-kubectl create namespace ops-team --context mamagement
+kubectl create namespace ops-team --context management
 ```
 
 * Apply Gloo Platform configuration for ops-team
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: Workspace
 metadata:
@@ -66,12 +66,12 @@ EOF
 
 * Create administrative namespace for app-team
 ```shell
-kubectl create namespace app-team --context mamagement
+kubectl create namespace app-team --context management
 ```
 
 * Apply Gloo Platform configuration for app-team
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: Workspace
 metadata:
@@ -114,7 +114,7 @@ EOF
 
 * Bring up the Gloo Platform Dashboard
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 

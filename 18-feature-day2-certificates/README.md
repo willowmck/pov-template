@@ -24,7 +24,7 @@ helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.12.2 \
-  --kube-context mamagement \
+  --kube-context management \
   -f data/cert-manager-values.yaml
 
 helm install cert-manager jetstack/cert-manager \
@@ -44,7 +44,7 @@ helm install cert-manager jetstack/cert-manager \
 
 * Wait for deployments to become healthy
 ```shell
-kubectl wait deployment --for condition=Available=True --all --context mamagement -n cert-manager
+kubectl wait deployment --for condition=Available=True --all --context management -n cert-manager
 kubectl wait deployment --for condition=Available=True --all --context web -n cert-manager
 kubectl wait deployment --for condition=Available=True --all --context lob -n cert-manager
 ```
@@ -54,21 +54,21 @@ This lab will use a self signed root certificate for all relay and workload cert
 
 * Create the self-signed secret
 ```shell
-kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context mamagement -n cert-manager
+kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context management -n cert-manager
 kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context web -n cert-manager
 kubectl create secret generic issuer-ca --from-file=tls.key=data/root-key.pem --from-file=tls.crt=data/root-cert.pem --context lob -n cert-manager
 ```
 
 * Create a ClusterIssuer for the root secret
 ```shell
-kubectl apply --context mamagement -n cert-manager -f data/secret-issuer.yaml
+kubectl apply --context management -n cert-manager -f data/secret-issuer.yaml
 kubectl apply --context web -n cert-manager -f data/secret-issuer.yaml
 kubectl apply --context lob -n cert-manager -f data/secret-issuer.yaml
 ```
 
 * Verify the issuers 
 ```bash
-kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context mamagement -n cert-manager
+kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context management -n cert-manager
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context web -n cert-manager
 kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context lob -n cert-manager
 ```
@@ -78,7 +78,7 @@ kubectl get clusterissuer self-signed-issuer -o jsonpath='{.status}' --context l
 The Gloo Platform server and Telemetry Gateway will need mTLS server certificates. The following commands generate the two certificates to allow the applications to receive connections from the workload clusters.
 * Create certificates for Gloo Management Server and Telemetry Gateway
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -127,18 +127,18 @@ EOF
 
 * Verify certificates were created
 ```shell
-kubectl get certificates --context mamagement -n gloo-mesh
+kubectl get certificates --context management -n gloo-mesh
 ```
 
 **Note** if certificates were not generated it may be beneficial to look at the cert manager logs.
 ```shell
-kubectl logs deploy/cert-manager --context mamagement -n cert-manager
+kubectl logs deploy/cert-manager --context management -n cert-manager
 ```
 * Cleanup old Gloo certificates and allow cert-manager to replace them
 ```shell
-kubectl delete secret relay-server-tls-secret --context mamagement -n gloo-mesh
-kubectl delete secret relay-tls-signing-secret --context mamagement -n gloo-mesh
-kubectl delete secret relay-root-tls-secret --context mamagement -n gloo-mesh
+kubectl delete secret relay-server-tls-secret --context management -n gloo-mesh
+kubectl delete secret relay-tls-signing-secret --context management -n gloo-mesh
+kubectl delete secret relay-root-tls-secret --context management -n gloo-mesh
 ```
 
 * Update the Gloo Platform to use the new certificates
@@ -146,7 +146,7 @@ kubectl delete secret relay-root-tls-secret --context mamagement -n gloo-mesh
 helm upgrade --install gloo-platform gloo-platform/gloo-platform \
   --version=2.3.9 \
   --namespace=gloo-mesh \
-  --kube-context mamagement \
+  --kube-context management \
   --reuse-values \
   -f data/gloo-mgmt-values.yaml
 ```
@@ -451,7 +451,7 @@ kubectl rollout restart deploy -n checkout-apis --context lob
 * Verify that the Gloo UI appears to be healthy
 * Open the Gloo UI and observe the agents are connected and service discovery is working
 ```bash
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 

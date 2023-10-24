@@ -16,7 +16,7 @@ The operations team is responsible for setting the ports and protocols of Gloo G
 
 * Configure Gloo Gateway ports and protocols using the Gloo `VirtualGateway` API. Delegate routing decisions to themselves, the `ops-team`
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualGateway
 metadata:
@@ -46,7 +46,7 @@ EOF
 
 * Create a `RouteTable` to delegate traffic decisions to the application team. They will decide where the traffic ultimately flows. 
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -75,7 +75,7 @@ Due to the Ops team delegating routing decisions to the App team, the App team n
 
 * Configure a `RouteTable` object to route to online-boutique frontend
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -116,7 +116,7 @@ kubectl create secret generic tls-secret --from-file=tls.key=tls.key --from-file
 
 * Using the `VirtualGateway` API we can update the current configuration to expose traffic on port 443 using TLS.
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualGateway
 metadata:

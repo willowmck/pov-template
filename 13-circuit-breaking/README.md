@@ -39,7 +39,7 @@ helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/f
 
 * Create a VirtualDestination to represent both frontend applications.
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualDestination
 metadata:
@@ -61,7 +61,7 @@ EOF
 
 * Then update the ingress routing to route to the VirtualDestination
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: RouteTable
 metadata:
@@ -94,7 +94,7 @@ In order to enable locality based routing, you need to define some parameters to
 
 * Create a FailoverPolicy to setup an ordered list of endpoints. 
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: FailoverPolicy
 metadata:
@@ -113,7 +113,7 @@ EOF
 
 * Add an OutlierDetectionPolicy to set the conditions of when an endpoint is considered unhealthy.
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: resilience.policy.gloo.solo.io/v2
 kind: OutlierDetectionPolicy
 metadata:

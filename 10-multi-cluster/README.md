@@ -30,12 +30,12 @@ The checkout APIs will be managed by the `checkout-team` in lob. To represent th
 
 * Create administration namespace for checkout-team
 ```shell
-kubectl create namespace checkout-team --context mamagement
+kubectl create namespace checkout-team --context management
 ```
 
 * Create workspace for checkout-team
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: Workspace
 metadata:
@@ -77,7 +77,7 @@ EOF
 
 * Update app-team Workspace to import checkout apis
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: WorkspaceSettings
 metadata:
@@ -106,7 +106,7 @@ EOF
 
 * View workspace in Gloo Mesh UI
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 
@@ -116,7 +116,7 @@ In order to facilitate multi-cluster routing, Gloo Platform `VirtualDestinations
 
 * Create Global Services for checkout-apis
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: VirtualDestination
 metadata:
@@ -163,7 +163,7 @@ EOF
 
 * Create Global Services for app team apis
 ```shell
-kubectl apply --context mamagement -n app-team -f data/app-team-global-services.yaml
+kubectl apply --context management -n app-team -f data/app-team-global-services.yaml
 ```
 
 * Update frontend to call checkout global services.
@@ -183,7 +183,7 @@ Due to the `app-team` and `checkout-team` employing zero trust architectures, th
 
 * Allow app-team to use checkout apis
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:
@@ -247,7 +247,7 @@ EOF
 
 * Allow checkout team to use app team apis
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context management -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:

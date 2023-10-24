@@ -25,7 +25,7 @@ For a detailed overview of what information you can find in the Gloo UI, see [Ex
 
 ![Gloo Platform Graph](images/gloo-platform-graph.png)
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 
@@ -51,7 +51,7 @@ Metrics provide important information about the health of the apps in your servi
 ![Prometheus Metrics](images/prometheus-metrics.png)
 * To view the raw metrics
 ```shell
-kubectl port-forward svc/prometheus-server --context mamagement -n gloo-mesh 9080:80
+kubectl port-forward svc/prometheus-server --context management -n gloo-mesh 9080:80
 echo "Prometheus available at http://localhost:9080"
 ```
 
@@ -117,7 +117,7 @@ EOF
 
 * Open the Gloo Platform Dashboard and click on `Tracing` tab
 ```shell
-kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context mamagement -n gloo-mesh
+kubectl port-forward svc/gloo-mesh-ui 8090:8090 --context management -n gloo-mesh
 echo "Gloo UI: http://localhost:8090"
 ```
 
