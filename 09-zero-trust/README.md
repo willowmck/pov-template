@@ -11,7 +11,7 @@ Links:
 ![Zero trust appp team](images/zero-trust.png)
 * Disable all traffic by default for Application Team
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:
@@ -44,7 +44,7 @@ Now that all traffic is denied by default, traffic needs to be allowed between t
 ![Zero trust appp team](images/fine-grained-access.png)
 * Allow access to the frontend from the ingress gateway
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:
@@ -68,7 +68,7 @@ https://$GLOO_GATEWAY_HTTPS
 ![](images/zero-trust-ingress.png)
 * Allow frontend to reach apis in same namespace
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
 metadata:

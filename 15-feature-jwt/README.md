@@ -35,7 +35,7 @@ curl -k "https://$GLOO_GATEWAY_HTTPS/currencies/convert" \
 ```
 * Since the Auth0 servers are not known to Gloo Platform, create an ExternalService reference.
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: networking.gloo.solo.io/v2
 kind: ExternalService
 metadata:
@@ -54,7 +54,7 @@ EOF
 
 * Enable JWT Authentication for the currency routes
 ```shell
-kubectl apply --context mamagement -f - <<EOF
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: security.policy.gloo.solo.io/v2
 kind: JWTPolicy
 metadata:
@@ -114,5 +114,5 @@ curl -vk -H "Authorization: Bearer $ACCESS_TOKEN" https://$GLOO_GATEWAY_HTTPS/cu
 
 * Cleanup JWT policy 
 ```
-kubectl delete jwtpolicy currency --context mamagement -n app-team
+kubectl delete jwtpolicy currency --context mgmt -n app-team
 ```

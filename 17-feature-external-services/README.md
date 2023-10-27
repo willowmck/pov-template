@@ -18,12 +18,12 @@ echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 
 * Create an ExternalService reference to the external API. 
 ```shell
-kubectl apply --context mamagement -n app-team -f data/external-service.yaml
+kubectl apply --context mgmt -n app-team -f data/external-service.yaml
 ```
 
 * Update the RouteTable to route to the ExternalService
 ```shell
-kubectl apply --context mamagement -n app-team -f data/external-route-table.yaml
+kubectl apply --context mgmt -n app-team -f data/external-route-table.yaml
 ```
 
 * Curl and see the response from the external service

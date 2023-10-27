@@ -16,7 +16,7 @@ echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 
 * Expose the currency API
 ```shell
-kubectl apply --context mamagement -f data/currency-route-table.yaml
+kubectl apply --context mgmt -f data/currency-route-table.yaml
 ```
 
 * Test the currency API
@@ -39,7 +39,7 @@ curl -k https://$GLOO_GATEWAY_HTTPS/currencies/convert \
 
 * Expose the product catalog API
 ```shell
-kubectl apply --context mamagement -f data/products-route-table.yaml
+kubectl apply --context mgmt -f data/products-route-table.yaml
 ```
 
 * Test requests to the product catalog API
@@ -53,12 +53,12 @@ The Gloo Gateway can also expose applications that do no reside in its own clust
 
 * Since the API is owned by the Checkout Team, the Ops team need to import their service to make it routable. 
 ```shell
-kubectl apply --context mamagement -f data/ops-team.yaml
+kubectl apply --context mgmt -f data/ops-team.yaml
 ```
 
 * Create the RouteTable pointing to the Shipping VirtualDestination
 ```shell
-kubectl apply --context mamagement -f data/shipping-route-table.yaml
+kubectl apply --context mgmt -f data/shipping-route-table.yaml
 ```
 
 * Test that the Gloo Gateway can reach the shipping service

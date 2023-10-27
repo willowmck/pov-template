@@ -24,8 +24,8 @@ kubectl get pods -n gloo-platform-addons --context web
 
 * Register the external authorization server with Gloo Platform
 ```shell
-kubectl create namespace ops-team --context mamagement
-kubectl apply --context mamagement -f - <<EOF
+kubectl create namespace ops-team --context mgmt
+kubectl apply --context mgmt -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: ExtAuthServer
 metadata:

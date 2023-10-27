@@ -155,9 +155,9 @@ kubectl delete namespace gloo-mesh --context lob
 
 * Remove the Workspace namespaces in management cluster
 ```shell
-kubectl delete namespace ops-team --context mamagement
-kubectl delete namespace app-team --context mamagement
-kubectl delete namespace checkout-team --context mamagement
+kubectl delete namespace ops-team --context mgmt
+kubectl delete namespace app-team --context mgmt
+kubectl delete namespace checkout-team --context mgmt
 ```
 
 * Cleanup management cluster
@@ -177,7 +177,7 @@ helm uninstall gloo-platform-crds \
 
 * Remove namespace
 ```shell
-kubectl delete namespace gloo-mesh --context mamagement
+kubectl delete namespace gloo-mesh --context mgmt
 ```
 
 ## Optional Deployments
@@ -204,7 +204,7 @@ helm uninstall cert-manager \
 
 * Cleanup cert-manager namespace
 ```shell
-kubectl delete namespace cert-manager --context mamagement
+kubectl delete namespace cert-manager --context mgmt
 ```
 
 * Cleanup Vault
@@ -216,5 +216,5 @@ helm uninstall vault \
 
 * Cleanup vault namespace
 ```shell
-kubectl delete namespace vault --context mamagement
+kubectl delete namespace vault --context mgmt
 ```
