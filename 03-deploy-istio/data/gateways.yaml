@@ -5,7 +5,7 @@ metadata:
   namespace: gloo-mesh
 spec:
   installations:
-      # The revision for this installation, such as 1-14
+      # The revision for this installation, such as 1-17
     - gatewayRevision: 1-17
       # List all workload clusters to install Istio into
       clusters:
@@ -37,12 +37,12 @@ spec:
                 app: gloo-gateway
                 revision: 1-17
               k8s:
-                  serviceAnnotations:
-                    service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-                    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                serviceAnnotations:
+                  service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 service:
-                  type: LoadBalancer
+                  type: LoadBalancer                
                   # Default ports
                   ports:
                     # Port for health checks on path /healthz/ready.
@@ -95,10 +95,10 @@ spec:
                 revision: 1-17
                 topology.istio.io/network: istio-network
               k8s:
-                  serviceAnnotations:
-                    service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-                    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+                serviceAnnotations:
+                  service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                  service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 env:
                   # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
                   # Required by Gloo for east-west routing
