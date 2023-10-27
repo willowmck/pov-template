@@ -12,8 +12,9 @@ spec:
   # remote cluster namespaces
   - name: '*'
     namespaces:
-    - name: istio-gateways
+    - name: istio-ingress
     - name: istio-eastwest
+    - name: istio-egress
     - name: gloo-platform-addons
 ---
 # workspace configuration
@@ -38,4 +39,4 @@ spec:
     eastWestGateways:
     - selector:
         labels:
-          istio: eastwestgateway
+          app: gloo-internal-gateway

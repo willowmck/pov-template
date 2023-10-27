@@ -10,7 +10,7 @@ export GLOO_GATEWAY_HTTPS=$(kubectl --context web -n istio-ingress get svc -l is
 echo "SECURE Online Boutique available at https://$GLOO_GATEWAY_HTTPS"
 ```
 
-**Note**: you may notice the wight: 100 configuration. This tells Gloo gateway to place this RouteTable before the frontend RouteTable with the / prefix route which doesnt have a weight. Higher integer values are considered higher priority. The default value is 0.
+**Note**: you may notice weight is set to 100 in the configuration. This tells Gloo gateway to place this RouteTable before the frontend RouteTable with the / prefix route which doesnt have a weight. Higher integer values are considered higher priority. The default value is 0.
 
 ![Expose APIS](images/app-arch.png)
 
