@@ -164,15 +164,15 @@ kubectl delete namespace checkout-team --context mgmt
 ```shell
 helm uninstall jaeger \
   --namespace gloo-mesh \
-  --kube-context mamagement
+  --kube-context mgmt
 
 helm uninstall gloo-platform \
   --namespace gloo-mesh \
-  --kube-context mamagement
+  --kube-context mgmt
 
 helm uninstall gloo-platform-crds \
   --namespace gloo-mesh \
-  --kube-context mamagement
+  --kube-context mgmt
 ```
 
 * Remove namespace
@@ -191,7 +191,7 @@ kubectl delete namespace keycloak --context web
 ```shell
 helm uninstall cert-manager \
   --namespace cert-manager \
-  --kube-context mamagement
+  --kube-context mgmt
 
 helm uninstall cert-manager \
   --namespace cert-manager \
@@ -211,7 +211,7 @@ kubectl delete namespace cert-manager --context mgmt
 ```shell
 helm uninstall vault \
   --namespace vault \
-  --kube-context mamagement
+  --kube-context mgmt
 ```
 
 * Cleanup vault namespace

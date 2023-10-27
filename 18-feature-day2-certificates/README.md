@@ -24,7 +24,7 @@ helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.12.2 \
-  --kube-context mamagement \
+  --kube-context mgmt \
   -f data/cert-manager-values.yaml
 
 helm install cert-manager jetstack/cert-manager \
@@ -146,7 +146,7 @@ kubectl delete secret relay-root-tls-secret --context mgmt -n gloo-mesh
 helm upgrade --install gloo-platform gloo-platform/gloo-platform \
   --version=2.3.9 \
   --namespace=gloo-mesh \
-  --kube-context mamagement \
+  --kube-context mgmt \
   --reuse-values \
   -f data/gloo-mgmt-values.yaml
 ```

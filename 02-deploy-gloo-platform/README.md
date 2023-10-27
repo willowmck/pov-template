@@ -42,13 +42,13 @@ kubectl create namespace gloo-mesh --context mgmt
 # helm show values gloo-platform/gloo-platform --version 2.4.4 > gloo-platform-values.yaml
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
   --version=2.4.4 \
-  --kube-context mamagement \
+  --kube-context mgmt \
   --namespace=gloo-mesh
 
 helm upgrade -i gloo-platform gloo-platform/gloo-platform \
   --version=2.4.4 \
   --namespace=gloo-mesh \
-  --kube-context mamagement \
+  --kube-context mgmt \
   --set licensing.glooMeshLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
   --set licensing.glooTrialLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
   --set licensing.glooGatewayLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
