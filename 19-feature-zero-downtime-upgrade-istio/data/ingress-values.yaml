@@ -1,9 +1,9 @@
-name: istio-ingressgateway-1-17
+name: istio-gateways-1-17
 global:
   hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
   tag: 1.17.2-solo
 labels:
-  app: gloo-gateway
+  istio: eastwestgateway
 service:
   type: ClusterIP
   ports:

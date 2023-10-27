@@ -45,16 +45,16 @@ aws iam create-policy \
 
 * Enable OIDC provider for service accounts
 ```shell
-eksctl utils associate-iam-oidc-provider --region=us-east-2 --cluster=cluster-1 --approve
-eksctl utils associate-iam-oidc-provider --region=us-west-2 --cluster=cluster-2 --approve
-eksctl utils associate-iam-oidc-provider --region=us-east-2 --cluster=management --approve
+eksctl utils associate-iam-oidc-provider --region=us-east-2 --cluster=web --approve
+eksctl utils associate-iam-oidc-provider --region=us-west-2 --cluster=lob --approve
+eksctl utils associate-iam-oidc-provider --region=us-east-2 --cluster=mgmt --approve
 ```
 
 * Create a Kubernetes service account named aws-load-balancer-controller in the kube-system namespace for the AWS Load Balancer Controller and annotate the Kubernetes service account with the name of the IAM role.
 ```shell
 export AWS_ACCOUNT_ID=<account_id>
 eksctl create iamserviceaccount \
-  --cluster=cluster-1 \
+  --cluster=web \
   --region us-east-2 \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
@@ -63,7 +63,7 @@ eksctl create iamserviceaccount \
   --approve
 
 eksctl create iamserviceaccount \
-  --cluster=cluster-2 \
+  --cluster=lob \
   --region us-west-2 \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
@@ -72,7 +72,7 @@ eksctl create iamserviceaccount \
   --approve
 
 eksctl create iamserviceaccount \
-  --cluster=management \
+  --cluster=mgmt \
   --region us-east-2 \
   --namespace=kube-system \
   --name=aws-load-balancer-controller \
@@ -89,21 +89,21 @@ helm repo update
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --kube-context web \
-  --set clusterName=cluster-1 \
+  --set clusterName=web \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --kube-context lob \
-  --set clusterName=cluster-2 \
+  --set clusterName=lob \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller 
 
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --kube-context mamagement \
-  --set clusterName=management \
+  --set clusterName=mgmt \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller
 ```

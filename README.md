@@ -87,7 +87,7 @@ Although, most prospects will want to test that Gloo Platform works in their "re
 This not only gives the prospect time to learn Gloo Platform but also helps the Solo.io Architects understand the requirements of your environment. 
 Prospects are welcome to deploy Gloo Platform to their "real" environments once they have a good grasp of the operational and architectural impacts it will have on their environment. 
 
-If the POC has to be performed on existing shared clusters there are some things to be aware of.
+If the POC has to be performed on existing web clusters there are some things to be aware of.
 
 **Networking**
 

@@ -10,14 +10,14 @@ Links:
 - [Gloo Platform Managed Istio](https://docs.solo.io/gloo-mesh-enterprise/latest/setup/installation/istio/gm_managed_istio/)
 - [GatewayLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/gateway_lifecycle_manager/)
 - [IstioLifecycleManager API](https://docs.solo.io/gloo-mesh-enterprise/latest/reference/api/istio_lifecycle_manager/)
-## Upgrade Istio using Helm in Cluster: shared
+## Upgrade Istio using Helm in Cluster: web
 
 * To upgrade Istio we will deploy a whole new canary version beside it. We will also deploy new gateways and migrate traffic to them.
 
 ```shell
 helm upgrade --install istio-base istio/base \
   -n istio-system \
-  --kube-context=shared \
+  --kube-context=web \
   --version 1.17.2 \
   --set defaultRevision=1-17
 
@@ -25,9 +25,9 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-system  \
-  --kube-context=shared \
-  --set "global.multiCluster.clusterName=shared" \
-  --set "meshConfig.trustDomain=shared" \
+  --kube-context=web \
+  --set "global.multiCluster.clusterName=web" \
+  --set "meshConfig.trustDomain=web" \
   -f data/istiod-values.yaml
 ```
 
@@ -39,7 +39,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
-  --kube-context=shared \
+  --kube-context=web \
   -f data/eastwest-values.yaml
 ```
 
@@ -49,7 +49,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
   --set revision=1-17 \
   --version 1.17.2 \
   --namespace istio-ingress  \
-  --kube-context=shared \
+  --kube-context=web \
   -f data/ingress-values.yaml
 ```
 
@@ -62,7 +62,7 @@ metadata:
   name: istio-ingressgateway
   namespace: istio-ingress
   labels:
-    app: gloo-gateway
+    istio: eastwestgateway
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "external"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
@@ -100,11 +100,11 @@ kubectl rollout restart deploy --context web -n gloo-platform-addons
 ```shell
 helm uninstall istio-ingressgateway-1-16 \
   --namespace istio-ingress  \
-  --kube-context=shared
+  --kube-context=web
 
 helm uninstall istiod-1-16 \
   --namespace istio-system  \
-  --kube-context=shared
+  --kube-context=web
 ```
 
 * Verify only Istio 1-17 is running

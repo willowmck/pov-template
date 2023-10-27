@@ -31,7 +31,7 @@ EOF
 helm upgrade -i ha-frontend --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --kube-context lob \
   --namespace online-boutique \
-  --set clusterName=cluster-2 \
+  --set clusterName=lob \
   -f  data/web-ui-values.yaml
 ```
 
@@ -136,10 +136,10 @@ EOF
 
 ## Perform Failover
 
-With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in shared will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove cluster-1 frontend from the list of available endpoints. It will then prefer the endpoint in lob until cluster-1 frontend is healthy again. 
+With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in web will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove cluster-1 frontend from the list of available endpoints. It will then prefer the endpoint in lob until cluster-1 frontend is healthy again. 
 ![Failover](images/failover.png)
 
-* Break frontend in shared so that it can no longer respond to traffic
+* Break frontend in web so that it can no longer respond to traffic
 ```shell
 kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":["sleep","20h"],"readinessProbe":null,"livenessProbe":null}]}}}}' --context web -n online-boutique
 ```
@@ -150,7 +150,7 @@ kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers"
 
 * Refresh the Online Boutique and observe the error and failover to cluster-2
 
-* Fix frontend in shared
+* Fix frontend in web
 ```shell
 kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":[],"readinessProbe":null,"livenessProbe":null}]}}}}' --context web -n online-boutique
 ```

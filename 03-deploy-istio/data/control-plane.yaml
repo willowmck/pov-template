@@ -21,9 +21,9 @@ spec:
         profile: minimal
         # Solo.io Istio distribution repository; required for Gloo Istio.
         # You get the repo key from your Solo Account Representative.
-        hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+        hub: us-docker.pkg.dev/gloo-mesh/istio-a7d0a87b8a81
         # Any Solo.io Gloo Istio tag
-        tag: 1.17.6-solo
+        tag: 1.17.5-solo
         namespace: istio-system
         # Mesh configuration
         meshConfig:

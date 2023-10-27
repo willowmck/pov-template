@@ -26,8 +26,8 @@ spec:
   workloads:
     - selector:
         labels:
-          app: gloo-gateway
-        cluster: shared
+          istio: eastwestgateway
+        cluster: web
         namespace: istio-ingress
   listeners: 
     # HTTP port
@@ -90,7 +90,7 @@ spec:
           - ref:
               name: frontend
               namespace: online-boutique
-              cluster: shared
+              cluster: web
             port:
               number: 80
 EOF
@@ -126,8 +126,8 @@ spec:
   workloads:
     - selector:
         labels:
-          app: gloo-gateway
-        cluster: shared
+          istio: eastwestgateway
+        cluster: web
         namespace: istio-ingress
   listeners: 
     # HTTP port

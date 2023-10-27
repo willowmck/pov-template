@@ -1,6 +1,6 @@
 global:
-  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
-  tag: 1.17.6-solo
+  hub: us-docker.pkg.dev/gloo-mesh/istio-a7d0a87b8a81
+  tag: 1.17.5-solo
 meshConfig:
   # The trust domain corresponds to the trust root of a system. 
   # For Gloo this should be the name of the cluster that cooresponds with the CA certificate CommonName identity
@@ -51,6 +51,11 @@ values:
 components:
   pilot:
     k8s:
+      overlays:
+        - kind: Deployment
+          name: istiod-1-17-5
+          patches:
+            - path: spec.template.spec.hostNetwork
       # Recommended to be >1 in production
       replicaCount: 1
       # The Istio load tests mesh consists of 1000 services and 2000 sidecars with 70,000 mesh-wide requests per second and Istiod used 1 vCPU and 1.5 GB of memory (1.10.3).

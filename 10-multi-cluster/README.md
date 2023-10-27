@@ -44,7 +44,7 @@ metadata:
 spec:
   workloadClusters:
   # admistrative namespace
-  - name: 'management'
+  - name: 'mgmt'
     namespaces:
     - name: checkout-team
   # workload cluster namespace

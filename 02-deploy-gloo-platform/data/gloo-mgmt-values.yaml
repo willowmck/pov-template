@@ -8,25 +8,22 @@ glooMgmtServer:
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-mgmt-server
-    tag: 2.4.1
+    tag: 2.4.4
   relay:
     # Push RBAC resources to the management server. Required for multicluster RBAC in the Gloo UI.
     pushRbac: true
   serviceOverrides:
     metadata:
       annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
         service.beta.kubernetes.io/aws-load-balancer-type: external
-        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: TCP
-        service.beta.kubernetes.io/aws-load-balancer-target-group-attributes: deregistration_delay.connection_termination.enabled=true,deregistration_delay.timeout_seconds=1
-        service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 # Configuration for the Gloo UI.
 glooUi:
   enabled: true
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-apiserver
-    tag: 2.4.1
+    tag: 2.4.4
   sidecars:
     console:
       # Container image.
@@ -36,7 +33,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-ui
         # Version tag for the container image.
-        tag: 2.4.1
+        tag: 2.4.4
     envoy:
       # Container image.
       image:
@@ -45,7 +42,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-envoy
         # Version tag for the container image.
-        tag: 2.4.1
+        tag: 2.4.4
 # Gloo Platform Redis configuration options.
 redis:
   deployment:
@@ -68,14 +65,12 @@ telemetryGateway:
   enabled: true
   image:
     repository: gcr.io/gloo-mesh/gloo-otel-collector
-    tag: 2.4.1
+    tag: 2.4.4
   service:
     type: LoadBalancer
     annotations:
       service.beta.kubernetes.io/aws-load-balancer-type: external
-      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: TCP
-      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+      service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
 # Optional customization for the Gloo Platform Telemetry Collector.
 telemetryGatewayCustomization:
   extraExporters:

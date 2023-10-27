@@ -151,7 +151,7 @@ helm upgrade --install gloo-platform gloo-platform/gloo-platform \
   -f data/gloo-mgmt-values.yaml
 ```
 
-## Cluster: shared Configuration
+## Cluster: web Configuration
 
 The workload clusters will need 2-3 certificates depending on your environment. The Gloo Platform Agent will require a client mTLS certificate for communicating with the Gloo Platform Server. Likewise the Telemetry Collector will also require an mTLS certificate to communicate with the Telemetry Gateway.
 
@@ -174,7 +174,7 @@ spec:
   commonName: gloo-agent
   dnsNames:
     # Must match the cluster name used in the install
-    - "shared"
+    - "web"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:

@@ -21,7 +21,7 @@ helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 ```
 
-## Install Istio on Cluster: shared
+## Install Istio on Cluster: web
 
 ![Istio Components cluster-1](images/istio-cluster1.png)
 
@@ -36,7 +36,7 @@ helm upgrade -i istio-base istio/base \
   -n istio-system \
   --version 1.17.6 \
   --set defaultRevision=1-17 \
-  --kube-context=shared
+  --kube-context=web
 ```
 
 * Install the `istiod` control plane 
@@ -45,9 +45,9 @@ helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-system  \
-  --kube-context=shared \
-  --set "global.multiCluster.clusterName=shared" \
-  --set "meshConfig.trustDomain=shared" \
+  --kube-context=web \
+  --set "global.multiCluster.clusterName=web" \
+  --set "meshConfig.trustDomain=web" \
   -f data/istiod-values.yaml
 ```
 
@@ -57,7 +57,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-eastwest  \
-  --kube-context=shared \
+  --kube-context=web \
   -f data/eastwest-values.yaml
 ```
 
@@ -67,7 +67,7 @@ helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
   --set revision=1-17 \
   --version 1.17.6 \
   --namespace istio-ingress  \
-  --kube-context=shared \
+  --kube-context=web \
   -f data/ingress-values.yaml
 ```
 
@@ -85,7 +85,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
   labels:
     istio: ingressgateway
-    app: gloo-gateway
+    istio: eastwestgateway
 spec:
   type: LoadBalancer
   selector:

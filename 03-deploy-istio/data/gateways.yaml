@@ -17,9 +17,9 @@ spec:
         profile: empty
         # Solo.io Istio distribution repository; required for Gloo Istio.
         # You get the repo key from your Solo Account Representative.
-        hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+        hub: us-docker.pkg.dev/gloo-mesh/istio-a7d0a87b8a81
         # The Solo.io Gloo Istio tag
-        tag: 1.17.6-solo
+        tag: 1.17.5-solo
         values:
           gateways:
             istio-ingressgateway:
@@ -34,7 +34,7 @@ spec:
               namespace: istio-ingress
               enabled: true
               label:
-                app: gloo-gateway
+                istio: eastwestgateway
                 revision: 1-17
               k8s:
                   serviceAnnotations:

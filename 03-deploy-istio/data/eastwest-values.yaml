@@ -1,7 +1,7 @@
 name: istio-eastwestgateway
 global:
-  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
-  tag: 1.17.6-solo
+  hub: us-docker.pkg.dev/gloo-mesh/istio-a7d0a87b8a81
+  tag: 1.17.5-solo
 labels:
   topology.istio.io/network: istio-network
   app: gloo-internal-gateway
@@ -9,8 +9,7 @@ service:
   type: LoadBalancer
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.

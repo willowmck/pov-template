@@ -39,14 +39,14 @@ kubectl create namespace gloo-mesh --context mamagement
 
 * Install Gloo Platform. This command installs the management plane components, such as the management server, UI and Prometheus server.
 ```shell
-# helm show values gloo-platform/gloo-platform --version 2.4.1 > gloo-platform-values.yaml
+# helm show values gloo-platform/gloo-platform --version 2.4.4 > gloo-platform-values.yaml
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --kube-context mamagement \
   --namespace=gloo-mesh
 
 helm upgrade -i gloo-platform gloo-platform/gloo-platform \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --namespace=gloo-mesh \
   --kube-context mamagement \
   --set licensing.glooMeshLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
@@ -104,10 +104,10 @@ spec:
 EOF
 ```
 
-## Install Gloo Agent on Cluster: shared
+## Install Gloo Agent on Cluster: web
 
 By simply installing the Gloo Platform Agent on a remote cluster you gain the ability to manage it with Gloo Platform. Initially, the Gloo Agent is non-invasive and simply relays service discovery information to the Management Plane.
-* Create the `gloo-mesh` namespace in cluster shared
+* Create the `gloo-mesh` namespace in cluster web
 ```shell
 kubectl create namespace gloo-mesh --context web
 ```
@@ -117,19 +117,19 @@ kubectl create namespace gloo-mesh --context web
 kubectl create secret generic relay-root-tls-secret --from-file ca.crt=ca.crt --context web -n gloo-mesh
 kubectl create secret generic relay-identity-token-secret --from-file token=token --context web -n gloo-mesh
 ```
-* Install the Gloo Agent in shared
+* Install the Gloo Agent in web
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --namespace=gloo-mesh \
   --kube-context web
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --namespace gloo-mesh \
   --kube-context web \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
-  --set common.cluster=shared \
+  --set common.cluster=web \
   --set telemetryCollector.config.exporters.otlp.endpoint=$GLOO_TELEMETRY_GATEWAY \
   -f data/gloo-agent-values.yaml
 ```
@@ -159,12 +159,12 @@ kubectl create secret generic relay-identity-token-secret --from-file token=toke
 * Install the Gloo Agent in lob
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --namespace=gloo-mesh \
   --kube-context lob
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.1 \
+  --version=2.4.4 \
   --namespace gloo-mesh \
   --kube-context lob \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \

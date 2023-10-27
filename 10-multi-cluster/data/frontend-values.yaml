@@ -1,4 +1,4 @@
-clusterName: 'cluster-1'
+clusterName: 'web'
 endpoints:
   productCatalogService: 'product-catalog.app-team.tcb.mesh:80'
   currencyService: 'currency.app-team.tcb.mesh:80'

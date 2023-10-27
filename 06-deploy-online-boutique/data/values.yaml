@@ -1,4 +1,4 @@
-clusterName: 'cluster-1'
+clusterName: 'web'
 images:
   repository: us-central1-docker.pkg.dev/field-engineering-us/online-boutique
   # Overrides the image tag whose default is the chart appVersion.

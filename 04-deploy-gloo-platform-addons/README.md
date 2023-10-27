@@ -8,12 +8,12 @@ The Gloo Platform Addons are extensions that helm enable certain features that a
 kubectl apply --context web -f data/namespaces.yaml
 ```
 
-* Install Gloo Platform Addon applications in shared
+* Install Gloo Platform Addon applications in web
 ```shell
 helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
   --namespace gloo-platform-addons \
-  --kube-context=shared \
-  --version 2.4.1 \
+  --kube-context=web \
+  --version 2.4.4 \
   -f data/gloo-platform-addons.yaml
 ```
 
@@ -53,7 +53,7 @@ spec:
   - number: 8083
     protocol: TCP
   services:
-  - cluster: "shared"
+  - cluster: "web"
     name: ext-auth-service
     namespace: gloo-platform-addons
 EOF
