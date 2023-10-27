@@ -82,7 +82,7 @@ spec:
             k8s:
               overlays:
                 - kind: Deployment
-                  name: istiod-1-17-5
+                  name: istiod-1-17
                   patches:
                     - path: spec.template.spec.hostNetwork
                       value: true
