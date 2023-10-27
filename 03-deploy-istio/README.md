@@ -23,7 +23,7 @@ helm repo update
 
 ## Install Istio on Cluster: web
 
-![Istio Components cluster-1](images/istio-cluster1.png)
+![Istio Components web](images/istio-cluster1.png)
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
@@ -34,7 +34,7 @@ kubectl apply --context web -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --set defaultRevision=1-17 \
   --kube-context=web
 ```
@@ -43,7 +43,7 @@ helm upgrade -i istio-base istio/base \
 ```shell
 helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --namespace istio-system  \
   --kube-context=web \
   --set "global.multiCluster.clusterName=web" \
@@ -55,7 +55,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --namespace istio-eastwest  \
   --kube-context=web \
   -f data/eastwest-values.yaml
@@ -65,7 +65,7 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 ```shell
 helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
   --set revision=1-17 \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --namespace istio-ingress  \
   --kube-context=web \
   -f data/ingress-values.yaml
@@ -85,7 +85,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
   labels:
     istio: ingressgateway
-    istio: eastwestgateway
+    app: gloo-gateway
 spec:
   type: LoadBalancer
   selector:
@@ -122,7 +122,7 @@ kubectl get service --context web -n istio-eastwest
 
 ## Install Istio on Cluster: lob
 
-![Istio Components cluster-2](images/istio-cluster2.png)
+![Istio Components lob](images/istio-cluster2.png)
 
 * Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
 ```shell
@@ -133,7 +133,7 @@ kubectl apply --context lob -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --set defaultRevision=1-17 \
   --kube-context=lob
 ```
@@ -142,7 +142,7 @@ helm upgrade -i istio-base istio/base \
 ```shell
 helm upgrade -i istiod-1-17 istio/istiod \
   --set revision=1-17 \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --namespace istio-system  \
   --kube-context=lob \
   --set "global.multiCluster.clusterName=lob" \
@@ -154,7 +154,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
   --set revision=1-17 \
-  --version 1.17.6 \
+  --version 1.17.5 \
   --namespace istio-eastwest  \
   --kube-context=lob \
   -f data/eastwest-values.yaml

@@ -80,7 +80,7 @@ Solo.io documentation is great for getting to know the Gloo Platform. From examp
 
 ![](images/3-cluster-setup.png)
 
-This POC depends on our typical *3 cluster environment* where one cluster will be used for the administration (management) of the other two clusters (cluster-1 and cluster-2), which run the gateway, service mesh and your workloads. 
+This POC depends on our typical *3 cluster environment* where one cluster will be used for the administration (management) of the other two clusters (web and lob), which run the gateway, service mesh and your workloads. 
 
 The best way to facilitate the POC is by creating 3 new Kubernetes clusters in your environment so that you can test Gloo Platform without impacting other teams and workloads.
 Although, most prospects will want to test that Gloo Platform works in their "real" environments, its important for users to understand Gloo Platform first.
@@ -104,7 +104,7 @@ If the POC has to be performed on existing web clusters there are some things to
     - Nodes: 2
     - CPU Per Node: 4vCPU
     - Memory Per Node: 16Gi
-  * Each Workload Cluster (cluster-1 and cluster-2):
+  * Each Workload Cluster (web and lob):
     - Nodes: 2
     - CPU Per Node: 4vCPU
     - Memory Per Node: 16Gi

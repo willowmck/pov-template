@@ -8,7 +8,7 @@ Links:
 - [Multi-Cluster Routing Docs](https://docs.solo.io/gloo-mesh-enterprise/main/concepts/traffic-management/multi-cluster/)
 - [Virtual Destination API](https://docs.solo.io/gloo-mesh-enterprise/main/reference/api/virtual_destination/)
 
-## Deploy Checkout to cluster-2
+## Deploy Checkout to lob
 
 ![Checkout APIs](images/checkout-apis.png)
 * Create `checkout-apis ` namespace in lob
@@ -16,7 +16,7 @@ Links:
 kubectl apply --context lob -f data/namespaces.yaml
 ```
 
-* Deploy checkout APIs to cluster-2
+* Deploy checkout APIs to lob
 ```shell
 helm upgrade -i checkout-apis --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --namespace checkout-apis  \
@@ -203,11 +203,11 @@ spec:
       - serviceAccountSelector:
           workspace: app-team
           name: frontend
-          cluster: 'cluster-1'
+          cluster: 'web'
       - serviceAccountSelector:
           workspace: app-team
           name: frontend
-          cluster: 'cluster-2'
+          cluster: 'lob'
 ---
 apiVersion: security.policy.gloo.solo.io/v2
 kind: AccessPolicy
@@ -274,6 +274,6 @@ spec:
       - serviceAccountSelector:
           namespace: checkout-apis
           name: checkoutservice
-          cluster: 'cluster-2'
+          cluster: 'lob'
 EOF
 ```

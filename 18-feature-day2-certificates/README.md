@@ -198,7 +198,7 @@ metadata:
 spec:
   commonName: gloo-telemetry-collector
   dnsNames:
-    - "cluster-1-gloo-telemetry-collector"
+    - "web-gloo-telemetry-collector"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -230,7 +230,7 @@ spec:
     - key encipherment
     - cert sign
   dnsNames:
-    - cluster-1.demo.example.com
+    - web.demo.example.com
   issuerRef:
     kind: ClusterIssuer
     name: self-signed-issuer
@@ -345,7 +345,7 @@ metadata:
 spec:
   commonName: gloo-telemetry-collector
   dnsNames:
-    - "cluster-2-gloo-telemetry-collector"
+    - "lob-gloo-telemetry-collector"
   duration: 8760h0m0s   ### 1 year life
   renewBefore: 8736h0m0s
   issuerRef:
@@ -377,7 +377,7 @@ spec:
     - key encipherment
     - cert sign
   dnsNames:
-    - cluster-2.demo.example.com
+    - lob.demo.example.com
   issuerRef:
     kind: ClusterIssuer
     name: self-signed-issuer

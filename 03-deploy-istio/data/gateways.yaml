@@ -34,12 +34,12 @@ spec:
               namespace: istio-ingress
               enabled: true
               label:
-                istio: eastwestgateway
+                app: gloo-gateway
                 revision: 1-17
               k8s:
                   serviceAnnotations:
                     service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
                     service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 service:
                   type: LoadBalancer
@@ -82,7 +82,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.17.6-solo
+        tag: 1.17.5-solo
         components:
           ingressGateways:
           # Enable the default east-west gateway

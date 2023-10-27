@@ -80,6 +80,12 @@ spec:
             enabled: false
           pilot:
             k8s:
+              overlays:
+                - kind: Deployment
+                  name: istiod-1-17-5
+                  patches:
+                    - path: spec.template.spec.hostNetwork
+                      value: true
               env:
                 # Disable selecting workload entries for local service routing.
                 # Required for Gloo VirtualDestinaton functionality.

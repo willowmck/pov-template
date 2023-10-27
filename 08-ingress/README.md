@@ -26,7 +26,7 @@ spec:
   workloads:
     - selector:
         labels:
-          istio: eastwestgateway
+          app: gloo-gateway
         cluster: web
         namespace: istio-ingress
   listeners: 
@@ -126,7 +126,7 @@ spec:
   workloads:
     - selector:
         labels:
-          istio: eastwestgateway
+          app: gloo-gateway
         cluster: web
         namespace: istio-ingress
   listeners: 

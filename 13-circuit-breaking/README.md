@@ -11,7 +11,7 @@ Links:
 
 ## Deploy HA frontend
 
-This lab will deploy the frontend application to both cluster-1 and cluster-2 and update the ingress routing to route to both availabile endpoints. You will then tune the routing to prefer the local frontend and failover to the other when something bad happens. 
+This lab will deploy the frontend application to both web and lob and update the ingress routing to route to both availabile endpoints. You will then tune the routing to prefer the local frontend and failover to the other when something bad happens. 
 ![High Availability Frontend](images/ha-frontend.png)
 
 * Create online-boutique namespace in lob
@@ -136,7 +136,7 @@ EOF
 
 ## Perform Failover
 
-With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in web will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove cluster-1 frontend from the list of available endpoints. It will then prefer the endpoint in lob until cluster-1 frontend is healthy again. 
+With the configurations in place, Gloo Platform will configure the ingress and proxy sidecars to automatically failover when the OutlierDetection parameters are met. To simulate this, the frontend in web will be configured to no longer respond to traffic. The ingress gateway will observe this behavior and automatically remove web frontend from the list of available endpoints. It will then prefer the endpoint in lob until web frontend is healthy again. 
 ![Failover](images/failover.png)
 
 * Break frontend in web so that it can no longer respond to traffic
@@ -148,11 +148,11 @@ kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers"
 
 ![Failover Routing](images/failover.png)
 
-* Refresh the Online Boutique and observe the error and failover to cluster-2
+* Refresh the Online Boutique and observe the error and failover to lob
 
 * Fix frontend in web
 ```shell
 kubectl patch deploy frontend --patch '{"spec":{"template":{"spec":{"containers":[{"name":"server","command":[],"readinessProbe":null,"livenessProbe":null}]}}}}' --context web -n online-boutique
 ```
 
-* Refresh the Online Boutique and observe the traffic be redirected back to the cluster-1 frontend once it\'s healthy.
+* Refresh the Online Boutique and observe the traffic be redirected back to the web frontend once it\'s healthy.

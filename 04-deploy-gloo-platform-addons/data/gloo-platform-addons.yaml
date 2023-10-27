@@ -1,32 +1,24 @@
 common:
   # Name of the cluster. Be sure to modify this value to match your cluster's name.
-  cluster: "lob"
+  cluster: "web"
   addonNamespace: gloo-platform-addons
-glooAgent:
-  enabled: false
+#glooAgent:
+#  enabled: false
 rateLimiter:
   enabled: true
-#  rateLimiter:
-#    image:
-#      registry: gcr.io/gloo-mesh
-#      tag: 0.9.3
-#  redis:
-#    image:
-#      registry: docker.io
-#      tag: 7.0.11-alpine
+  rateLimiter:
+    image:
+      registry: gcr.io/gloo-mesh
+      tag: 0.9.3
+  redis:
+    image:
+      registry: docker.io
+      tag: 7.0.11-alpine
 extAuthService:
   enabled: true
-  extAuth: 
-    apiKeyStorage: 
-      name: redis
-      enabled: true
-      config: 
-        connection: 
-          host: redis.gloo-mesh-addons:6379
-      secretKey: ThisIsSecret
-#  extAuth:
-#    image:
-#      # Image registry.
-#      registry: gcr.io/gloo-mesh
-#      # Version tag for the container.
-#      tag: 0.47.1
+  extAuth:
+    image:
+      # Image registry.
+      registry: gcr.io/gloo-mesh
+      # Version tag for the container.
+      tag: 0.47.1

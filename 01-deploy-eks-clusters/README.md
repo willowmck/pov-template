@@ -8,12 +8,12 @@
 
 * Deploy the first cluster
 ```shell
-eksctl create cluster -f data/cluster-1.yaml
+eksctl create cluster -f data/web.yaml
 ```
 
 * Deploy the second cluster
 ```shell
-eksctl create cluster -f data/cluster-2.yaml
+eksctl create cluster -f data/lob.yaml
 ```
 
 * Deploy the third and final cluster
@@ -24,8 +24,8 @@ eksctl create cluster -f data/management.yaml
 * Update the kubernetes context names
 ```shell
 export AWS_USER=<user>
-kubectl config rename-context $AWS_USER@cluster-1.us-east-2.eksctl.io cluster-1
-kubectl config rename-context $AWS_USER@cluster-2.us-west-2.eksctl.io cluster-2
+kubectl config rename-context $AWS_USER@web.us-east-2.eksctl.io web
+kubectl config rename-context $AWS_USER@lob.us-west-2.eksctl.io lob
 kubectl config rename-context $AWS_USER@management.us-east-2.eksctl.io management
 ```
 

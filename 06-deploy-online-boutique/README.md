@@ -3,13 +3,13 @@
 
 The Online Boutique applicaion is a set of microservices that make up an online shopping website. There is a UI application that reaches out to many APIs to retrieve its data to populate the UI. This workshop will incrementally add features to this website in the coming labs. 
 
-![Online Boutique cluster-1](images/online-boutique-cluster1.png)
+![Online Boutique web](images/online-boutique-cluster1.png)
 
 * Create the Online Boutique namespaces
 ```shell
 kubectl apply --context web -f data/namespaces.yaml
 ```
-* Deploy online boutique into cluster-1
+* Deploy online boutique into web
 ```shell
 helm upgrade -i online-boutique --version "5.0.3" oci://us-central1-docker.pkg.dev/field-engineering-us/helm-charts/onlineboutique \
   --namespace online-boutique  \
