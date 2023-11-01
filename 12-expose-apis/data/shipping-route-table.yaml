@@ -12,7 +12,7 @@ spec:
           prefix: /shipping
       name: shipping
       labels:
-        app: shippingservice
+        route: shipping
       forwardTo:
         destinations:
           - ref:
