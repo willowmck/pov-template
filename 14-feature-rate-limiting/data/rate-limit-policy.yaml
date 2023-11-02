@@ -9,7 +9,7 @@ spec:
       number: 8083
     ref:
       name: rate-limiter
-      namespace: gloo-platform-addons
+      namespace: gloo-mesh-addons
       cluster: web
 ---
 apiVersion: trafficcontrol.policy.gloo.solo.io/v2
@@ -34,7 +34,7 @@ spec:
   - ref:
       cluster: web
       name: rate-limiter
-      namespace: gloo-platform-addons
+      namespace: gloo-mesh-addons
     port:
       name: grpc
   raw:

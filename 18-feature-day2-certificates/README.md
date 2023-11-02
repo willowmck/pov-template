@@ -294,7 +294,7 @@ kubectl logs -l app=istiod --tail 500 --context web -n istio-system| grep x509
 ```shell
 kubectl rollout restart deploy --context web -n istio-ingress
 kubectl rollout restart deploy --context web -n istio-eastwest
-kubectl rollout restart deploy --context web -n gloo-platform-addons
+kubectl rollout restart deploy --context web -n gloo-mesh-addons
 ```
 
 * Restart workloads

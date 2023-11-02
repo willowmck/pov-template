@@ -1,6 +1,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: gloo-platform-addons
+  name: gloo-mesh-addons
   labels:
     istio.io/rev: 1-17

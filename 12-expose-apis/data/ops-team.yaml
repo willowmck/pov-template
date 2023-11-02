@@ -15,7 +15,7 @@ spec:
     - name: istio-ingress
     - name: istio-eastwest
     - name: istio-egress
-    - name: gloo-platform-addons
+    - name: gloo-mesh-addons
 ---
 # workspace configuration
 apiVersion: admin.gloo.solo.io/v2
