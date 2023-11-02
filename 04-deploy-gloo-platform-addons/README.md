@@ -3,10 +3,16 @@
 The Gloo Platform Addons are extensions that helm enable certain features that are offered within. The Gloo Platform addons contain a set of applications and cache to enable rate limiting.
 ![Gloo Platform Addon Components](images/gloo-platform-addons.png)
 
+Create the Gloo Platform Addons namespace
+```shell
+kubectl apply --context web -f data/namespaces.yaml
+```
+
 * Install Gloo Platform Addon applications in web
 ```shell
-helm upgrade -i gloo-agent-addons gloo-platform/gloo-platform --kube-context web \
-   --namespace gloo-mesh-addons \
+helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform
+   --kube-context web \
+   --namespace gloo-platform-addons \
    --version v2.4.4 \
    --set common.cluster=web \
    --set extAuthService.enabled=true \
