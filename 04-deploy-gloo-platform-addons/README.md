@@ -10,7 +10,7 @@ kubectl apply --context web -f data/namespaces.yaml
 
 * Install Gloo Platform Addon applications in web
 ```shell
-helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform
+helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
    --kube-context web \
    --namespace gloo-platform-addons \
    --version v2.4.4 \
