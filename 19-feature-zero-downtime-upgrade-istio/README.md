@@ -92,8 +92,8 @@ EOF
 ```shell
 kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context web -n online-boutique
 kubectl rollout restart deploy --context web -n online-boutique
-kubectl label namespace gloo-mesh-addons --overwrite istio.io/rev=1-17 --context web -n online-boutique
-kubectl rollout restart deploy --context web -n gloo-mesh-addons
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context web -n online-boutique
+kubectl rollout restart deploy --context web -n gloo-platform-addons
 ```
 
 * Remove Istio 

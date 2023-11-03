@@ -1,7 +1,7 @@
 common:
   # Name of the cluster. Be sure to modify this value to match your cluster's name.
   cluster: "web"
-  addonNamespace: gloo-mesh-addons
+  addonNamespace: gloo-platform-addons
 #glooAgent:
 #  enabled: false
 rateLimiter:

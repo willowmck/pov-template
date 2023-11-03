@@ -39,7 +39,7 @@ spec:
               k8s:
                 serviceAnnotations:
                   service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
                   service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 service:
                   type: LoadBalancer                
@@ -97,7 +97,7 @@ spec:
               k8s:
                 serviceAnnotations:
                   service.beta.kubernetes.io/aws-load-balancer-type: "external"
-                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
                 env:
                   # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
                   # Required by Gloo for east-west routing

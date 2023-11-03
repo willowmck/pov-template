@@ -42,14 +42,14 @@ kubectl delete namespace checkout-apis --context lob
 
 * Remove the Gloo Addons
 ```shell
-helm uninstall gloo-mesh-addons \
-  --namespace gloo-mesh-addons \
+helm uninstall gloo-platform-addons \
+  --namespace gloo-platform-addons \
   --kube-context web
 ```
 
 * Delete the Gloo Addons namespace
 ```
-kubectl delete namespace gloo-mesh-addons --context web
+kubectl delete namespace gloo-platform-addons --context web
 ```
 
 ## Clean Up Istio

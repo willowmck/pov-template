@@ -17,7 +17,7 @@ source ./scripts/assert.sh
 * [Lab 1 - Deploy EKS clusters](./01-deploy-eks-clusters/README.md)
 * [Lab 2 - Deploy Gloo Platform](./02-deploy-gloo-platform/README.md)
 * [Lab 3 - Deploy Istio](./03-deploy-istio/README.md)
-* [Lab 4 - Deploy Gloo Platform Addons](./04-deploy-gloo-mesh-addons/README.md)
+* [Lab 4 - Deploy Gloo Platform Addons](./04-deploy-gloo-platform-addons/README.md)
 * [Lab 5 - Certificate Management](./05-certificates/README.md)
 * [Lab 6 - Deploy Online Boutique](./06-deploy-online-boutique/README.md)
 * [Lab 7 - Configure Gloo Platform](./07-configure-gloo-platform/README.md)
