@@ -15,6 +15,7 @@ helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
    --namespace gloo-platform-addons \
    --version v2.4.4 \
    --set common.cluster=web \
+   --set common.addonNamespace=gloo-platform-addons \
    --set extAuthService.enabled=true \
    --set rateLimiter.enabled=true
 ```
