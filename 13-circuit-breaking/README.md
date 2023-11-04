@@ -21,7 +21,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    istio.io/rev: 1-16
+    istio.io/rev: 1-17
   name: online-boutique
 EOF
 ```

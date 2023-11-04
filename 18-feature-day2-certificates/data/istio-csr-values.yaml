@@ -114,7 +114,7 @@ app:
     # not using `default` as a revision, add the `default` revision here
     # anyway. The resulting certificate will include a DNS name that won't be
     # used, but will pass this constraint.
-    revisions: ["default","1-16","1-17"]
+    revisions: ["default","1-17","1-18"]
     # -- The namespace where the istio control-plane is running.
     namespace: istio-system
   controller:

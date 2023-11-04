@@ -19,10 +19,10 @@ helm upgrade --install istio-base istio/base \
   -n istio-system \
   --kube-context=web \
   --version 1.17.2 \
-  --set defaultRevision=1-17
+  --set defaultRevision=1-18
 
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
+helm upgrade -i istiod-1-18 istio/istiod \
+  --set revision=1-18 \
   --version 1.17.2 \
   --namespace istio-system  \
   --kube-context=web \
@@ -36,17 +36,17 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
+  --set revision=1-18 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
   --kube-context=web \
   -f data/eastwest-values.yaml
 ```
 
-* Deploy new Istio 1-17 ingress gateway using revisions
+* Deploy new Istio 1-18 ingress gateway using revisions
 ```shell
-helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
-  --set revision=1-17 \
+helm upgrade -i istio-ingressgateway-1-18 istio/gateway \
+  --set revision=1-18 \
   --version 1.17.2 \
   --namespace istio-ingress  \
   --kube-context=web \
@@ -70,7 +70,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    istio: ingressgateway-1-17
+    istio: ingressgateway-1-18
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.
@@ -90,40 +90,40 @@ EOF
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context web -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context web -n online-boutique
 kubectl rollout restart deploy --context web -n online-boutique
-kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-17 --context web -n online-boutique
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-18 --context web -n online-boutique
 kubectl rollout restart deploy --context web -n gloo-platform-addons
 ```
 
 * Remove Istio 
 ```shell
-helm uninstall istio-ingressgateway-1-16 \
+helm uninstall istio-ingressgateway-1-17 \
   --namespace istio-ingress  \
   --kube-context=web
 
-helm uninstall istiod-1-16 \
+helm uninstall istiod-1-17 \
   --namespace istio-system  \
   --kube-context=web
 ```
 
-* Verify only Istio 1-17 is running
+* Verify only Istio 1-18 is running
 ```shell
 istioctl proxy-status --context web
 ```
 
 ## Upgrade Istio using Helm in Cluster: lob
 
-* Upgrade Istiod to 1-17 components
+* Upgrade Istiod to 1-18 components
 ```shell
 helm upgrade --install istio-base istio/base \
   --kube-context=lob \
   -n istio-system \
   --version 1.17.2 \
-  --set defaultRevision=1-17
+  --set defaultRevision=1-18
 
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
+helm upgrade -i istiod-1-18 istio/istiod \
+  --set revision=1-18 \
   --version 1.17.2 \
   --namespace istio-system  \
   --kube-context=lob \
@@ -136,7 +136,7 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
+  --set revision=1-18 \
   --version 1.17.2 \
   --namespace istio-eastwest  \
   --kube-context=lob \
@@ -145,21 +145,21 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-17 --context lob -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context lob -n online-boutique
 kubectl rollout restart deploy --context lob -n online-boutique
 
-kubectl label namespace checkout-apis --overwrite istio.io/rev=1-17 --context lob -n checkout-apis
+kubectl label namespace checkout-apis --overwrite istio.io/rev=1-18 --context lob -n checkout-apis
 kubectl rollout restart deploy --context lob -n checkout-apis
 ```
 
 * Remove Istio 
 ```shell
-helm uninstall istiod-1-16 \
+helm uninstall istiod-1-17 \
   --namespace istio-system  \
   --kube-context=lob
 ```
 
-* Verify only Istio 1-17 is running
+* Verify only Istio 1-18 is running
 ```shell
 istioctl proxy-status --context lob
 ```

@@ -6,7 +6,7 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - revision: 1-16
+    - revision: 1-17
       # List all workload clusters to install Istio into
       clusters:
       - name: web
