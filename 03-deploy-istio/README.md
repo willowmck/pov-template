@@ -21,6 +21,26 @@ helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 ```
 
+# Using the Istio Lifecycle Manager
+
+* Create `istio-system`, `istio-eastwest`, `istio-ingress` namespaces
+```shell
+kubectl apply --context web -f data/namespaces.yaml
+kubectl apply --context lob -f data/namespaces.yaml
+```
+
+* Install the Istio control-planes using IstioLifecycleManager
+```shell
+kubectl apply --context mgmt -f data/control-plane.yaml
+```
+
+* Install the Istio gateways using GatewayLifecycleManager
+```shell
+kubectl apply --context mgmt -f data/gateways.yaml
+```
+
+# Using Helm
+
 ## Install Istio on Cluster: web
 
 ![Istio Components web](images/istio-cluster1.png)
