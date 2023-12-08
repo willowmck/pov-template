@@ -39,6 +39,30 @@ kubectl apply --context mgmt -f data/control-plane.yaml
 kubectl apply --context mgmt -f data/gateways.yaml
 ```
 
+* Verify pods are running on the web cluster
+```bash
+kubectl get pods --context web -n istio-system
+kubectl get pods --no-headers --context web -n istio-ingress
+kubectl get pods --no-headers --context web -n istio-eastwest
+```
+
+* Verify the load balancer is created on the web cluster`
+```shell
+kubectl get service --context web -n istio-ingress
+kubectl get service --context web -n istio-eastwest
+```
+
+* Verify pods are running on the lob cluster
+```bash
+kubectl get pods --context lob -n istio-system
+kubectl get pods --no-headers --context lob -n istio-eastwest
+```
+
+* Verify the load balancer is created on the lob cluster`
+```shell
+kubectl get service --context lob -n istio-eastwest
+```
+
 # Using Helm
 
 ## Install Istio on Cluster: web
