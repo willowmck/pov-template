@@ -38,9 +38,10 @@ spec:
                 revision: 1-17
               k8s:
                 serviceAnnotations:
-                  service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  # Uncomment the following to use an external lb
+                  # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-                  service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 service:
                   type: LoadBalancer                
                   # Default ports
@@ -96,7 +97,8 @@ spec:
                 topology.istio.io/network: istio-network
               k8s:
                 serviceAnnotations:
-                  service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  # Uncomment the following to use an external lb
+                  # service.beta.kubernetes.io/aws-load-balancer-type: "external"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
                 env:
                   # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
