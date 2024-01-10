@@ -8,7 +8,8 @@ labels:
 service:
   type: LoadBalancer
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    # Uncomment the following to use an external lb
+    # service.beta.kubernetes.io/aws-load-balancer-type: "external"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
   ports:
   # Port for health checks on path /healthz/ready.
