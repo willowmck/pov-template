@@ -64,9 +64,10 @@ metadata:
   labels:
     istio: eastwestgateway
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    # Uncomment the following to use an external lb
+    # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
 spec:
   type: LoadBalancer
   selector:
