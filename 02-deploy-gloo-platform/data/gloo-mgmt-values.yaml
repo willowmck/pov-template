@@ -16,7 +16,8 @@ glooMgmtServer:
     metadata:
       annotations:
         service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-        service.beta.kubernetes.io/aws-load-balancer-type: external
+        # Uncomment the following to use an external lb
+        # service.beta.kubernetes.io/aws-load-balancer-type: external
 # Configuration for the Gloo UI.
 glooUi:
   enabled: true
@@ -69,7 +70,8 @@ telemetryGateway:
   service:
     type: LoadBalancer
     annotations:
-      service.beta.kubernetes.io/aws-load-balancer-type: external
+      # Uncomment the following to use an external lb
+      # service.beta.kubernetes.io/aws-load-balancer-type: external
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
 # Optional customization for the Gloo Platform Telemetry Collector.
 telemetryGatewayCustomization:
