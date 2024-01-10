@@ -96,9 +96,10 @@ spec:
                 topology.istio.io/network: istio-network
               k8s:
                 serviceAnnotations:
-                  service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  # Uncomment the following to use an external lb
+                  # service.beta.kubernetes.io/aws-load-balancer-type: "external"
+                  # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
-                  service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                 env:
                   # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
                   # Required by Gloo for east-west routing
