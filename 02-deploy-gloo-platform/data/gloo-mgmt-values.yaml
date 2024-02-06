@@ -8,7 +8,7 @@ glooMgmtServer:
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-mgmt-server
-    tag: 2.4.4
+    tag: 2.5.0
   relay:
     # Push RBAC resources to the management server. Required for multicluster RBAC in the Gloo UI.
     pushRbac: true
@@ -24,7 +24,7 @@ glooUi:
   image:
     registry: gcr.io/gloo-mesh
     repository: gloo-mesh-apiserver
-    tag: 2.4.4
+    tag: 2.5.0
   sidecars:
     console:
       # Container image.
@@ -34,7 +34,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-ui
         # Version tag for the container image.
-        tag: 2.4.4
+        tag: 2.5.0
     envoy:
       # Container image.
       image:
@@ -43,7 +43,7 @@ glooUi:
         # Image name (repository).
         repository: gloo-mesh-envoy
         # Version tag for the container image.
-        tag: 2.4.4
+        tag: 2.5.0
 # Gloo Platform Redis configuration options.
 redis:
   deployment:
@@ -66,7 +66,7 @@ telemetryGateway:
   enabled: true
   image:
     repository: gcr.io/gloo-mesh/gloo-otel-collector
-    tag: 2.4.4
+    tag: 2.5.0
   service:
     type: LoadBalancer
     annotations:

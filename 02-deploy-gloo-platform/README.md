@@ -39,19 +39,17 @@ kubectl create namespace gloo-mesh --context mgmt
 
 * Install Gloo Platform. This command installs the management plane components, such as the management server, UI and Prometheus server.
 ```shell
-# helm show values gloo-platform/gloo-platform --version 2.4.4 > gloo-platform-values.yaml
+# helm show values gloo-platform/gloo-platform --version 2.5.0 > gloo-platform-values.yaml
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --kube-context mgmt \
   --namespace=gloo-mesh
 
 helm upgrade -i gloo-platform gloo-platform/gloo-platform \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --namespace=gloo-mesh \
   --kube-context mgmt \
-  --set licensing.glooMeshLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
   --set licensing.glooTrialLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
-  --set licensing.glooGatewayLicenseKey=$GLOO_PLATFORM_LICENSE_KEY \
   -f data/gloo-mgmt-values.yaml
 ```
 
@@ -120,12 +118,12 @@ kubectl create secret generic relay-identity-token-secret --from-file token=toke
 * Install the Gloo Agent in web
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --namespace=gloo-mesh \
   --kube-context web
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --namespace gloo-mesh \
   --kube-context web \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
@@ -159,12 +157,12 @@ kubectl create secret generic relay-identity-token-secret --from-file token=toke
 * Install the Gloo Agent in lob
 ```shell
 helm upgrade -i gloo-platform-crds gloo-platform/gloo-platform-crds \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --namespace=gloo-mesh \
   --kube-context lob
 
 helm upgrade -i gloo-agent gloo-platform/gloo-platform \
-  --version=2.4.4 \
+  --version=2.5.0 \
   --namespace gloo-mesh \
   --kube-context lob \
   --set glooAgent.relay.serverAddress=$GLOO_PLATFORM_SERVER_ADDRESS \
