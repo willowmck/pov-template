@@ -78,16 +78,16 @@ kubectl apply --context web -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.17.5 \
-  --set defaultRevision=1-17 \
+  --version 1.19.3 \
+  --set defaultRevision=1-19 \
   --kube-context=web
 ```
 
 * Install the `istiod` control plane 
 ```shell
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
-  --version 1.17.5 \
+helm upgrade -i istiod-1-19 istio/istiod \
+  --set revision=1-19 \
+  --version 1.19.3 \
   --namespace istio-system  \
   --kube-context=web \
   --set "global.multiCluster.clusterName=web" \
@@ -98,8 +98,8 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Install the Istio eastwest gateway which is used for multi-cluster communication between clusters using mTLS.
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.5 \
+  --set revision=1-19 \
+  --version 1.19.3 \
   --namespace istio-eastwest  \
   --kube-context=web \
   -f data/eastwest-values.yaml
@@ -107,9 +107,9 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Install the Istio ingress gateway with a ClusterIP service type. For best proudction practices and to support multiple revisions a standalone Service will be created to allow easy migration of traffic.
 ```shell
-helm upgrade -i istio-ingressgateway-1-17 istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.5 \
+helm upgrade -i istio-ingressgateway-1-19 istio/gateway \
+  --set revision=1-19 \
+  --version 1.19.3 \
   --namespace istio-ingress  \
   --kube-context=web \
   -f data/ingress-values.yaml
@@ -125,8 +125,8 @@ metadata:
   namespace: istio-ingress
   annotations:
     # Uncomment the following to use an external lb
-    # service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
   labels:
     istio: ingressgateway
@@ -134,7 +134,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    istio: ingressgateway-1-17
+    istio: ingressgateway-1-19
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.
@@ -178,16 +178,16 @@ kubectl apply --context lob -f data/namespaces.yaml
 ```shell
 helm upgrade -i istio-base istio/base \
   -n istio-system \
-  --version 1.17.5 \
-  --set defaultRevision=1-17 \
+  --version 1.19.3 \
+  --set defaultRevision=1-19 \
   --kube-context=lob
 ```
 
 * Install the `istiod` control plane 
 ```shell
-helm upgrade -i istiod-1-17 istio/istiod \
-  --set revision=1-17 \
-  --version 1.17.5 \
+helm upgrade -i istiod-1-19 istio/istiod \
+  --set revision=1-19 \
+  --version 1.19.3 \
   --namespace istio-system  \
   --kube-context=lob \
   --set "global.multiCluster.clusterName=lob" \
@@ -198,8 +198,8 @@ helm upgrade -i istiod-1-17 istio/istiod \
 * Install istio eastwest gateway
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-17 \
-  --version 1.17.5 \
+  --set revision=1-19 \
+  --version 1.19.3 \
   --namespace istio-eastwest  \
   --kube-context=lob \
   -f data/eastwest-values.yaml

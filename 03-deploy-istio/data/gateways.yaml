@@ -6,7 +6,7 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-17
-    - gatewayRevision: 1-17
+    - gatewayRevision: 1-19
       # List all workload clusters to install Istio into
       clusters:
       - name: web
@@ -17,9 +17,9 @@ spec:
         profile: empty
         # Solo.io Istio distribution repository; required for Gloo Istio.
         # You get the repo key from your Solo Account Representative.
-        hub: us-docker.pkg.dev/gloo-mesh/istio-a7d0a87b8a81
+        hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.17.5-solo
+        tag: 1.19.3-solo
         values:
           gateways:
             istio-ingressgateway:
@@ -35,13 +35,14 @@ spec:
               enabled: true
               label:
                 app: gloo-gateway
-                revision: 1-17
+                revision: 1-19
               k8s:
                 serviceAnnotations:
                   # Uncomment the following to use an external lb
                   # service.beta.kubernetes.io/aws-load-balancer-type: "external"
                   # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                  service.beta.kubernetes.io/aws-load-balancer-internal: "true"
                 service:
                   type: LoadBalancer                
                   # Default ports
@@ -68,7 +69,7 @@ metadata:
 spec:
   installations:
       # The revision for this installation, such as 1-14
-    - gatewayRevision: 1-17
+    - gatewayRevision: 1-19
       # List all workload clusters to install Istio into
       clusters:
       - name: web
@@ -83,7 +84,7 @@ spec:
         # You get the repo key from your Solo Account Representative.
         hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
         # The Solo.io Gloo Istio tag
-        tag: 1.17.5-solo
+        tag: 1.19.3-solo
         components:
           ingressGateways:
           # Enable the default east-west gateway
@@ -93,13 +94,14 @@ spec:
               enabled: true
               label:
                 app: gloo-internal-gateway
-                revision: 1-17
+                revision: 1-19
                 topology.istio.io/network: istio-network
               k8s:
                 serviceAnnotations:
                   # Uncomment the following to use an external lb
                   # service.beta.kubernetes.io/aws-load-balancer-type: "external"
                   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
+                  service.beta.kubernetes.io/aws-load-balancer-internal: "true"
                 env:
                   # sni-dnat adds the clusters required for AUTO_PASSTHROUGH mode
                   # Required by Gloo for east-west routing
