@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: gloo-platform-addons
   labels:
-    istio.io/rev: 1-17
+    istio.io/rev: 1-19

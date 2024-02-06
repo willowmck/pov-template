@@ -13,7 +13,7 @@ kubectl apply --context web -f data/namespaces.yaml
 helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
    --kube-context web \
    --namespace gloo-platform-addons \
-   --version v2.4.4 \
+   --version v2.5.0 \
    --set common.cluster=web \
    --set common.addonNamespace=gloo-platform-addons \
    --set extAuthService.enabled=true \
