@@ -1,7 +1,7 @@
 ## Lab 17 - Calling External Services <a name="lab-17---calling-external-services-"></a>
 
 
-Many times users will need to communicate with applications outiside of the service mesh. Gloo Platform represents these applications as `External Services`. By telling Gloo Platform about an External Service you are allowing that endpoint to be discovered and routable from applications running inside the service mesh. This concept becomes powerfull due to the ability to also apply Gloo Platform policies to it. For example in the below lab you will be securing the httpbin.org application with the JWT authentication in the previous lab. 
+Many times users will need to communicate with applications outiside of the service mesh. Gloo Platform represents these applications as `External Services`. By telling Gloo Platform about an External Service you are allowing that endpoint to be discovered and routable from applications running inside the service mesh. This concept becomes powerful due to the ability to also apply Gloo Platform policies to it. For example in the below lab you will be securing the httpbin.org application with the JWT authentication in the previous lab. 
 
 ![External API](images/external-api.png)
 Links:
