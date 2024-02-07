@@ -3,7 +3,6 @@ global:
   hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
   tag: 1.19.3-solo
 labels:
-  istio: ingressgateway
   app: gloo-gateway
 service:
   type: ClusterIP
