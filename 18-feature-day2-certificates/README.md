@@ -144,7 +144,7 @@ kubectl delete secret relay-root-tls-secret --context mgmt -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-platform gloo-platform/gloo-platform \
-  --version=2.3.9 \
+  --version=2.5.0 \
   --namespace=gloo-mesh \
   --kube-context mgmt \
   --reuse-values \
@@ -223,7 +223,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonname: web.demo.example.com
+  commonName: web.demo.example.com
   isCA: true
   usages:
     - digital signature
@@ -258,7 +258,7 @@ kubectl delete secret relay-identity-token-secret --context web -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.3.9  \
+  --version=2.5.0  \
   --namespace gloo-mesh \
   --kube-context web \
   --reuse-values \
@@ -370,7 +370,7 @@ spec:
   secretName: cacerts
   duration: 720h # 30d
   renewBefore: 360h # 15d
-  commonname: lob.demo.example.com
+  commonName: lob.demo.example.com
   isCA: true
   usages:
     - digital signature
@@ -405,7 +405,7 @@ kubectl delete secret relay-identity-token-secret --context lob -n gloo-mesh
 * Update the Gloo Platform to use the new certificates
 ```shell
 helm upgrade --install gloo-agent gloo-platform/gloo-platform \
-  --version=2.3.9  \
+  --version=2.5.0  \
   --namespace gloo-mesh \
   --kube-context lob \
   --reuse-values \
@@ -419,7 +419,7 @@ kubectl logs deploy/gloo-mesh-agent --context lob -n gloo-mesh
 
 * Update Istio to use new CA certificate
 ```shell
-kubectl delete secret cacerts --context web -n istio-system
+kubectl delete secret cacerts --context lob -n istio-system
 ```
 
 * Verify new cacerts is generated

@@ -29,3 +29,5 @@ telemetryGateway:
 # Optional customization for the Gloo Platform Telemetry Collector.
 telemetryGatewayCustomization:
   disableCertGeneration: true
+telemetryCollector:
+  enabled: true
