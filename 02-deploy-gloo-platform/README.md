@@ -37,6 +37,20 @@ Gloo Platform can be installed a number of ways but the most common is via `helm
 kubectl create namespace gloo-mesh --context mgmt
 ```
 
+* For Portal, we will install Clickhouse integration to get some statistics around API usage.  Create the following secret for Clickhouse auth.
+```shell
+cat << EOF | kubectl --context mgmt apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clickhouse-auth
+  namespace: gloo-mesh
+type: Opaque
+stringData:
+  password: password
+EOF
+```
+
 * Install Gloo Platform. This command installs the management plane components, such as the management server, UI and Prometheus server.
 ```shell
 # helm show values gloo-platform/gloo-platform --version 2.5.0 > gloo-platform-values.yaml
@@ -71,9 +85,12 @@ until kubectl get service/gloo-telemetry-gateway --output=jsonpath='{.status.loa
 GLOO_PLATFORM_SERVER_DOMAIN=$(kubectl get svc gloo-mesh-mgmt-server --context mgmt -n gloo-mesh -o jsonpath='{.status.loadBalancer.ingress[0].*}')
 GLOO_PLATFORM_SERVER_ADDRESS=${GLOO_PLATFORM_SERVER_DOMAIN}:$(kubectl get svc gloo-mesh-mgmt-server --context mgmt -n gloo-mesh -o jsonpath='{.spec.ports[?(@.name=="grpc")].port}')
 GLOO_TELEMETRY_GATEWAY=$(kubectl get svc gloo-telemetry-gateway --context mgmt -n gloo-mesh -o jsonpath='{.status.loadBalancer.ingress[0].*}'):$(kubectl get svc gloo-telemetry-gateway --context mgmt -n gloo-mesh -o jsonpath='{.spec.ports[?(@.port==4317)].port}')
+GLOO_UI=$(kubectl --context mgmt -n gloo-mesh get svc gloo-mesh-ui -o jsonpath='{.status.loadBalancer.ingress[0].*}'):8090
+
 
 echo "Mgmt Plane Address: $GLOO_PLATFORM_SERVER_ADDRESS"
 echo "Metrics Gateway Address: $GLOO_TELEMETRY_GATEWAY"
+echo "Gloo UI: $GLOO_UI"
 ```
 * Before installing Gloo agents on the workload clusters trust needs to be established. The following command copys the public TLS root certificate and a token used for the Gloo agents to authenticate with the management plane.
 ```shell
