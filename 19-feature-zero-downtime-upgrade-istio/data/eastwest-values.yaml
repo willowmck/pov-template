@@ -1,7 +1,7 @@
 name: istio-eastwestgateway
 global:
   hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
-  tag: 1.17.2-solo
+  tag: 1.20.2-solo
 labels:
   topology.istio.io/network: istio-network
   app: gloo-internal-gateway

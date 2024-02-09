@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: istio-system
-  name: istiod-1-17
+  name: istiod-1-20
 spec:
   template:
     spec:

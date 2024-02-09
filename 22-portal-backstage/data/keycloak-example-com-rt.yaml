@@ -1,0 +1,25 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: keycloak-rt
+  namespace: ops-team
+spec:
+  hosts:
+  #- keycloak.keycloak.svc.cluster.local
+  - keycloak.example.com
+  virtualGateways:
+  - name: istio-ingressgateway
+    namespace: ops-team
+    cluster: mgmt
+  http:
+  - matchers:
+    - uri:
+        prefix: /
+    forwardTo:
+      destinations:
+        - ref:
+            name: keycloak
+            namespace: keycloak
+            cluster: web
+          port:
+            number: 80

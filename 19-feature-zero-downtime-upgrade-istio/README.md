@@ -2,7 +2,7 @@
 
 
 ![Upgrade Istio](images/upgrade-istio.png)
-Historically, upgrading Istio without downtime has been a complicated ordeal. Today, Gloo Platform can easily facilitate zero downtime upgrades using its Istio Lifecycle Manager. Gloo Platform allows you to deploy multiple versions if Istio side-by-side and transition from one version to the other. 
+Historically, upgrading Istio without downtime has been a complicated ordeal. Today, Gloo Platform can easily facilitate zero downtime upgrades using its Istio Lifecycle Manager. Gloo Platform allows you to deploy multiple versions of Istio side-by-side and transition from one version to the other. 
 This lab will show you how to upgrade Istio quickly and safely without impacting client traffic. This is done through the use of Istio revisions. 
 
 Links:
@@ -18,12 +18,12 @@ Links:
 helm upgrade --install istio-base istio/base \
   -n istio-system \
   --kube-context=web \
-  --version 1.17.2 \
-  --set defaultRevision=1-18
+  --version 1.20.2 \
+  --set defaultRevision=1-20
 
-helm upgrade -i istiod-1-18 istio/istiod \
-  --set revision=1-18 \
-  --version 1.17.2 \
+helm upgrade -i istiod-1-20 istio/istiod \
+  --set revision=1-20 \
+  --version 1.20.2 \
   --namespace istio-system  \
   --kube-context=web \
   --set "global.multiCluster.clusterName=web" \
@@ -36,18 +36,18 @@ helm upgrade -i istiod-1-18 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-18 \
-  --version 1.17.2 \
+  --set revision=1-20 \
+  --version 1.20.2 \
   --namespace istio-eastwest  \
   --kube-context=web \
   -f data/eastwest-values.yaml
 ```
 
-* Deploy new Istio 1-18 ingress gateway using revisions
+* Deploy new Istio 1-20 ingress gateway using revisions
 ```shell
-helm upgrade -i istio-ingressgateway-1-18 istio/gateway \
-  --set revision=1-18 \
-  --version 1.17.2 \
+helm upgrade -i istio-ingressgateway-1-20 istio/gateway \
+  --set revision=1-20 \
+  --version 1.20.2 \
   --namespace istio-ingress  \
   --kube-context=web \
   -f data/ingress-values.yaml
@@ -62,16 +62,16 @@ metadata:
   name: istio-ingressgateway
   namespace: istio-ingress
   labels:
-    istio: eastwestgateway
+    app: gloo-gateway
   annotations:
     # Uncomment the following to use an external lb
     # service.beta.kubernetes.io/aws-load-balancer-type: "external"
-    # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "instance"
 spec:
   type: LoadBalancer
   selector:
-    istio: ingressgateway-1-18
+    istio: ingressgateway-1-20
   ports:
   # Port for health checks on path /healthz/ready.
   # For AWS ELBs, this port must be listed first.
@@ -91,41 +91,41 @@ EOF
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context web -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-20 --context web -n online-boutique
 kubectl rollout restart deploy --context web -n online-boutique
-kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-18 --context web -n online-boutique
+kubectl label namespace gloo-platform-addons --overwrite istio.io/rev=1-20 --context web -n online-boutique
 kubectl rollout restart deploy --context web -n gloo-platform-addons
 ```
 
 * Remove Istio 
 ```shell
-helm uninstall istio-ingressgateway-1-17 \
+helm uninstall istio-ingressgateway-1-19 \
   --namespace istio-ingress  \
   --kube-context=web
 
-helm uninstall istiod-1-17 \
+helm uninstall istiod-1-19 \
   --namespace istio-system  \
   --kube-context=web
 ```
 
-* Verify only Istio 1-18 is running
+* Verify only Istio 1-20 is running
 ```shell
 istioctl proxy-status --context web
 ```
 
 ## Upgrade Istio using Helm in Cluster: lob
 
-* Upgrade Istiod to 1-18 components
+* Upgrade Istiod to 1-20 components
 ```shell
 helm upgrade --install istio-base istio/base \
   --kube-context=lob \
   -n istio-system \
-  --version 1.17.2 \
-  --set defaultRevision=1-18
+  --version 1.20.2 \
+  --set defaultRevision=1-20
 
-helm upgrade -i istiod-1-18 istio/istiod \
-  --set revision=1-18 \
-  --version 1.17.2 \
+helm upgrade -i istiod-1-20 istio/istiod \
+  --set revision=1-20 \
+  --version 1.20.2 \
   --namespace istio-system  \
   --kube-context=lob \
   --set "global.multiCluster.clusterName=lob" \
@@ -137,8 +137,8 @@ helm upgrade -i istiod-1-18 istio/istiod \
 * Upgrade the Istio eastwest gateway in place
 ```shell
 helm upgrade -i istio-eastwestgateway istio/gateway \
-  --set revision=1-18 \
-  --version 1.17.2 \
+  --set revision=1-20 \
+  --version 1.20.2 \
   --namespace istio-eastwest  \
   --kube-context=lob \
   -f data/eastwest-values.yaml
@@ -146,16 +146,16 @@ helm upgrade -i istio-eastwestgateway istio/gateway \
 
 * Finally update the application namespaces to the new revision and perform a rolling restart.
 ```shell
-kubectl label namespace online-boutique --overwrite istio.io/rev=1-18 --context lob -n online-boutique
+kubectl label namespace online-boutique --overwrite istio.io/rev=1-20 --context lob -n online-boutique
 kubectl rollout restart deploy --context lob -n online-boutique
 
-kubectl label namespace checkout-apis --overwrite istio.io/rev=1-18 --context lob -n checkout-apis
+kubectl label namespace checkout-apis --overwrite istio.io/rev=1-20 --context lob -n checkout-apis
 kubectl rollout restart deploy --context lob -n checkout-apis
 ```
 
 * Remove Istio 
 ```shell
-helm uninstall istiod-1-17 \
+helm uninstall istiod-1-19 \
   --namespace istio-system  \
   --kube-context=lob
 ```
