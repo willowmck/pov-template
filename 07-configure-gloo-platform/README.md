@@ -49,6 +49,13 @@ spec:
   importFrom:
   - workspaces:
     - name: app-team
+    - selector:
+        allow_ingress: "true"
+    resources:
+    - kind: SERVICE
+    - kind: ALL
+      labels:
+        expose: "true"
   # export service discovery to any workspace that needs ingress
   exportTo:
   - workspaces:
@@ -102,6 +109,69 @@ spec:
   exportTo:
   - workspaces:
     - name: ops-team
+  options:
+    eastWestGateways:
+    - selector:
+        labels:
+          app: gloo-internal-gateway
+EOF
+```
+
+## Create Bookinfo Workspace
+* Create administrative namespace for bookinfo-team
+```shell
+kubectl create namespace bookinfo-team --context mgmt
+```
+
+* Create Bookinfo team workspace
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: Workspace
+metadata:
+  name: bookinfo
+  namespace: gloo-mesh
+  labels:
+    allow_ingress: "true"
+spec:
+  workloadClusters:
+  # admistrative namespace
+  - name: mgmt
+    namespaces:
+    - name: bookinfo-team
+  # workload cluster namespace
+  - name: '*'
+    namespaces:
+    - name: bookinfo-frontends
+    - name: bookinfo-backends
+---
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: bookinfo
+  namespace: bookinfo-team
+spec:
+  importFrom:
+  - workspaces:
+    - name: ops-team
+    resources:
+    - kind: SERVICE
+  exportTo:
+  - workspaces:
+    - name: ops-team
+    resources:
+    - kind: SERVICE
+      labels:
+        app: productpage
+    - kind: SERVICE
+      labels:
+        app: reviews
+    - kind: SERVICE
+      labels:
+        app: ratings
+    - kind: ALL
+      labels:
+        expose: "true"
   options:
     eastWestGateways:
     - selector:
