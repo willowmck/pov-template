@@ -69,6 +69,8 @@ spec:
 EOF
 ```
 
+If you check the dashboard you will find an error on this RouteTable indicating no delegate routes found.  Don't worry.  We are just about to fix that.
+
 ## Application Team Routing
 
 Due to the Ops team delegating routing decisions to the App team, the App team now needs to configure where traffic should flow.
@@ -81,6 +83,8 @@ kind: RouteTable
 metadata:
   name: frontend
   namespace: app-team
+  labels:
+    ingress: all
 spec:
   workloadSelectors: []
   http:

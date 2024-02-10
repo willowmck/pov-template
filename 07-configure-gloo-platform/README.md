@@ -49,13 +49,6 @@ spec:
   importFrom:
   - workspaces:
     - name: app-team
-    - selector:
-        allow_ingress: "true"
-    resources:
-    - kind: SERVICE
-    - kind: ALL
-      labels:
-        expose: "true"
   # export service discovery to any workspace that needs ingress
   exportTo:
   - workspaces:
@@ -131,8 +124,6 @@ kind: Workspace
 metadata:
   name: bookinfo
   namespace: gloo-mesh
-  labels:
-    allow_ingress: "true"
 spec:
   workloadClusters:
   # admistrative namespace
