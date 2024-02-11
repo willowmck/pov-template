@@ -615,3 +615,153 @@ x-envoy-ratelimited: true
 date: Sun, 11 Feb 2024 15:52:41 GMT
 server: istio-envoy
 ```
+
+### Expose an external API and stitch it with another one
+You can also expose external APIs.
+
+Let's create an external service to define how to access the host openlibrary.org.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalService
+metadata:
+  name: openlibrary
+  namespace: bookinfo-team
+  labels:
+    expose: "true"
+spec:
+  hosts:
+  - openlibrary.org
+  ports:
+  - name: http
+    number: 80
+    protocol: HTTP
+  - name: https
+    number: 443
+    protocol: HTTPS
+    clientsideTls: {}
+EOF
+```
+
+Then, you need to create an ApiSchemaDiscovery object to tell Gloo Platform how to fetch the OpenAPI document.
+```shell
+kubectl apply --context web -f - <<EOF
+apiVersion: apimanagement.gloo.solo.io/v2
+kind: ApiSchemaDiscovery
+metadata:
+  name: openlibrary
+  namespace: bookinfo-frontends
+spec:
+  openapi:
+    fetchEndpoint:
+      url: "https://openlibrary.org/static/openapi.json"
+  servedBy:
+  - destinationSelector:
+      kind: EXTERNAL_SERVICE
+      port:
+        number: 443
+      selector:
+        cluster: mgmt
+        name: openlibrary
+        namespace: bookinfo-team
+EOF
+```
+
+An APIDoc should be automatically created.
+```shell
+kubectl --context web -n bookinfo-frontends get apidoc openlibrary -o yaml
+```
+
+Finally, you can create a new RouteTable to stitch together the /search.json path with the existing Bookinfo API.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: productpage-api-v2
+  namespace: bookinfo-team
+  labels:
+    expose: "true"
+    portal-users: "true"
+    api: bookinfo
+spec:
+  portalMetadata:
+    title: BookInfo REST API v2
+    description: REST API for the Bookinfo application
+    apiProductId: bookinfo
+    apiProductDisplayName: BookInfo REST API
+    apiVersion: v2
+    customMetadata:
+      lifecyclePhase: "General Availability"
+  http:
+    - matchers:
+      - uri:
+          prefix: /api/bookinfo/v2/search.json
+      labels:
+        apikeys: "true"
+        ratelimited: "true"
+        api: "productpage"
+      forwardTo:
+        pathRewrite: /search.json
+        hostRewrite: openlibrary.org
+        destinations:
+          - kind: EXTERNAL_SERVICE 
+            ref:
+              name: openlibrary
+              namespace: bookinfo-team
+              cluster: mgmt
+            port:
+              number: 443
+    - matchers:
+      - uri:
+          regex: /api/bookinfo/v2/authors/([^.]+).json
+      labels:
+        apikeys: "true"
+        ratelimited: "true"
+        api: "productpage"
+      forwardTo:
+        hostRewrite: openlibrary.org
+        regexRewrite:
+          pattern:
+            regex: /api/bookinfo/v2/authors/([^.]+).json
+          substitution: /authors/\1.json
+        destinations:
+          - kind: EXTERNAL_SERVICE 
+            ref:
+              name: openlibrary
+              namespace: bookinfo-team
+              cluster: mgmt
+            port:
+              number: 443
+    - matchers:
+      - uri:
+          prefix: /api/bookinfo/v2
+      labels:
+        apikeys: "true"
+        ratelimited: "true"
+        api: "productpage"
+      forwardTo:
+        pathRewrite: /api/v1/products
+        destinations:
+          - ref:
+              name: productpage
+              namespace: bookinfo-frontends
+              cluster: web
+            port:
+              number: 9080
+EOF
+```
+
+You can think about this RouteTable as the same API product as the one we've created previously, but this time we defined the version to be v2.
+
+You can check the new path is available.
+```shell
+curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v2/search.json?title=The%20Comedy%20of%20Errors&fields=language&limit=1"
+```
+
+Note that we have also exposed the /authors/{olid}.json path to demonstrate how we can use regular expressions to capture path parameters.
+
+You can try it out with the following command.
+```shell
+curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v2/authors/OL23919A.json"
+```
