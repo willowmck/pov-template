@@ -765,3 +765,179 @@ You can try it out with the following command.
 ```shell
 curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v2/authors/OL23919A.json"
 ```
+
+### Expose the dev portal backend
+Now that your API has been exposed securely and our plans defined, you probably want to advertise it through a developer portal.
+
+Two components are serving this purpose:
+* the Gloo Platform portal backend which provides an API
+* the Gloo Platform portal frontend which consumes this API
+
+In this lab, we're going to setup the Gloo Platform portal backend.
+
+The ops team should create a parent RouteTable for the portal.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: main-portal
+  namespace: ops-team
+spec:
+  hosts:
+    - web-portal.example.com
+  virtualGateways:
+    - name: ingress
+      namespace: ops-team
+      cluster: mgmt
+  workloadSelectors: []
+  http:
+    - name: root
+      matchers:
+      - uri:
+          prefix: /
+      delegate:
+        routeTables:
+          - labels:
+              expose: "true"
+              portal: "true"
+            workspace: ops-team
+        sortMethod: ROUTE_SPECIFICITY
+EOF
+```
+
+After that, you can expose the portal API through Ingress Gateway using a RouteTable.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: portal-server
+  namespace: ops-team
+  labels:
+    expose: "true"
+    portal: "true"
+spec:
+  defaultDestination:
+    ref:
+      name: gloo-mesh-portal-server
+      namespace: gloo-platform-addons
+      cluster: web
+    port:
+      number: 8080
+  http:
+    - forwardTo:
+        pathRewrite: /v1
+      name: authn-api-and-usage-plans-access-token
+      labels:
+        oauth: "access-token"
+        route: portal-api
+      matchers:
+        - uri:
+            prefix: /portal-server/v1
+          headers:
+            - name: Authorization
+    - forwardTo:
+        pathRewrite: /v1
+      name: authn-api-and-usage-plans
+      labels:
+        oauth: "authorization-code"
+        route: portal-api
+      matchers:
+        - uri:
+            prefix: /portal-server/v1
+          headers:
+            - name: Cookie
+              #value: ".*?id_token=.*" # if not storing the id_token in Redis
+              value: ".*?keycloak-session=.*" # if storing the id_token in Redis
+              regex: true
+    - name: no-auth-apis
+      forwardTo:
+        pathRewrite: /v1
+      labels:
+        route: portal-api
+      matchers:
+        - uri:
+            prefix: /portal-server/v1
+EOF
+```
+
+Make sure your /etc/hosts is updated for web-portal.example.com. 
+You should now be able to access the portal API through the gateway without any authentication.
+```shell
+curl -k "https://web-portal.example.com/portal-server/v1/apis"
+```
+
+Here is the expected output.
+```
+{"message":"portal config not found for host: ***"}
+```
+
+You can see that no portal configuration has been found.  Let's create it.
+
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: apimanagement.gloo.solo.io/v2
+kind: Portal
+metadata:
+  name: portal
+  namespace: ops-team
+spec:
+  portalBackendSelectors:
+    - selector:
+        cluster: web
+        namespace: gloo-platform-addons
+  domains:
+  - "*"
+  usagePlans:
+    - name: bronze
+      displayName: "Bronze Plan"
+      description: "A basic usage plan"
+    - name: silver
+      displayName: "Silver Plan"
+      description: "A better usage plan"
+    - name: gold
+      displayName: "Gold Plan"
+      description: "The best usage plan!"
+  apis:
+    - labels:
+        api: bookinfo
+EOF
+```
+
+Try again to access the API.
+```shell
+curl -k "https://web-portal.example.com/portal-server/v1/apis"
+```
+
+The response should be an empty array: [].
+
+This is expected because you are not authenticated.  Users will authenticate on the frontends using OIDC and get access to specific APIs and plans based on the claims they will have in the returned JWT token.
+
+You need to create a PortalGroup to define these rules.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: apimanagement.gloo.solo.io/v2
+kind: PortalGroup
+metadata:
+  name: portal-users
+  namespace: ops-team
+spec:
+  name: portal-users
+  description: a group for users accessing the customers APIs
+  membership:
+    - claims:
+        - key: group
+          value: users
+  accessLevel:
+    apis:
+    - labels:
+        portal-users: "true"
+    usagePlans:
+    - gold
+EOF
+```
+
+All the users who will have a JWT token containing the claim group with the value users will have access to the APIs containing the label portal-users: "true".
+
+The RouteTable we have created for the bookinfo API has this label.
