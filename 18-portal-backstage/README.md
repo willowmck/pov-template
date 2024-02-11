@@ -282,3 +282,336 @@ curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "
   ${KEYCLOAK_URL}/admin/realms/master/users
 
 ```
+
+### Expose the productpage API securely
+Gloo Platform includes a developer portal, which is well integrated with its core API.
+
+Let's start with API discovery.
+
+Annotate the productpage service to allow the Gloo Platform agent to discovery its API.
+```shell
+kubectl --context web -n bookinfo-frontends annotate service productpage gloo.solo.io/scrape-openapi-source=https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/swagger.yaml --overwrite
+kubectl --context web -n bookinfo-frontends annotate service productpage gloo.solo.io/scrape-openapi-pull-attempts="3" --overwrite
+kubectl --context web -n bookinfo-frontends annotate service productpage gloo.solo.io/scrape-openapi-retry-delay=5s --overwrite
+kubectl --context web -n bookinfo-frontends annotate service productpage gloo.solo.io/scrape-openapi-use-backoff="true" --overwrite
+```
+
+An APIDoc object should be created.
+```shell
+kubectl --context web -n bookinfo-frontends get apidoc productpage-service -o yaml
+```
+
+If nothing appears, restart Redis.
+
+You should get something like this.
+```shell
+apiVersion: apimanagement.gloo.solo.io/v2
+kind: ApiDoc
+metadata:
+  creationTimestamp: "2023-04-05T06:48:33Z"
+  generation: 1
+  labels:
+    reconciler.mesh.gloo.solo.io/name: schema-reporter-service
+  name: productpage-service
+  namespace: bookinfo-frontends
+  resourceVersion: "116408"
+  uid: 2ae9188c-713e-4ba3-86a6-8689f55cda0f
+spec:
+  openapi:
+    inlineString: '{"components":{"schemas":{"Product":{"description":"Basic information
+      about a product","properties":{"descriptionHtml":{"description":"Description
+      of the book - may contain HTML tags","type":"string"},"id":{"description":"Product
+      id","format":"int32","type":"integer"},"title":{"description":"Title of the
+      book","type":"string"}},"required":["id","title","descriptionHtml"],"type":"object"},"ProductDetails":{"description":"Detailed
+      information about a product","properties":{"ISBN-10":{"description":"ISBN-10
+      of the book","type":"string"},"ISBN-13":{"description":"ISBN-13 of the book","type":"string"},"author":{"description":"Author
+      of the book","type":"string"},"id":{"description":"Product id","format":"int32","type":"integer"},"language":{"description":"Language
+      of the book","type":"string"},"pages":{"description":"Number of pages of the
+      book","format":"int32","type":"integer"},"publisher":{"description":"Publisher
+      of the book","type":"string"},"type":{"description":"Type of the book","enum":["paperback","hardcover"],"type":"string"},"year":{"description":"Year
+      the book was first published in","format":"int32","type":"integer"}},"required":["id","publisher","language","author","ISBN-10","ISBN-13","year","type","pages"],"type":"object"},"ProductRatings":{"description":"Object
+      containing ratings of a product","properties":{"id":{"description":"Product
+      id","format":"int32","type":"integer"},"ratings":{"additionalProperties":{"type":"string"},"description":"A
+      hashmap where keys are reviewer names, values are number of stars","type":"object"}},"required":["id","ratings"],"type":"object"},"ProductReviews":{"description":"Object
+      containing reviews for a product","properties":{"id":{"description":"Product
+      id","format":"int32","type":"integer"},"reviews":{"description":"List of reviews","items":{"$ref":"#/components/schemas/Review"},"type":"array"}},"required":["id","reviews"],"type":"object"},"Rating":{"description":"Rating
+      of a product","properties":{"color":{"description":"Color in which stars should
+      be displayed","enum":["red","black"],"type":"string"},"stars":{"description":"Number
+      of stars","format":"int32","maximum":5,"minimum":1,"type":"integer"}},"required":["stars","color"],"type":"object"},"Review":{"description":"Review
+      of a product","properties":{"rating":{"$ref":"#/components/schemas/Rating"},"reviewer":{"description":"Name
+      of the reviewer","type":"string"},"text":{"description":"Review text","type":"string"}},"required":["reviewer","text"],"type":"object"}}},"externalDocs":{"description":"Learn
+      more about the Istio BookInfo application","url":"https://istio.io/docs/samples/bookinfo.html"},"info":{"description":"This
+      is the API of the Istio BookInfo sample application.","license":{"name":"Apache
+      2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"},"termsOfService":"https://istio.io/","title":"BookInfo
+      API","version":"1.0.0"},"openapi":"3.0.3","paths":{"/products":{"get":{"description":"List
+      all products available in the application with a minimum amount of information.","operationId":"getProducts","responses":{"200":{"content":{"application/json":{"schema":{"items":{"$ref":"#/components/schemas/Product"},"type":"array"}}},"description":"successful
+      operation"}},"summary":"List all products","tags":["product"]}},"/products/{id}":{"get":{"description":"Get
+      detailed information about an individual product with the given id.","operationId":"getProduct","parameters":[{"description":"Product
+      id","in":"path","name":"id","required":true,"schema":{"format":"int32","type":"integer"}}],"responses":{"200":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductDetails"}}},"description":"successful
+      operation"},"400":{"description":"Invalid product id"}},"summary":"Get individual
+      product","tags":["product"]}},"/products/{id}/ratings":{"get":{"description":"Get
+      ratings for a product, including stars and their color.","operationId":"getProductRatings","parameters":[{"description":"Product
+      id","in":"path","name":"id","required":true,"schema":{"format":"int32","type":"integer"}}],"responses":{"200":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductRatings"}}},"description":"successful
+      operation"},"400":{"description":"Invalid product id"}},"summary":"Get ratings
+      for a product","tags":["rating"]}},"/products/{id}/reviews":{"get":{"description":"Get
+      reviews for a product, including review text and possibly ratings information.","operationId":"getProductReviews","parameters":[{"description":"Product
+      id","in":"path","name":"id","required":true,"schema":{"format":"int32","type":"integer"}}],"responses":{"200":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductReviews"}}},"description":"successful
+      operation"},"400":{"description":"Invalid product id"}},"summary":"Get reviews
+      for a product","tags":["review"]}}},"servers":[{"url":"/api/v1"}],"tags":[{"description":"Information
+      about a product (in this case a book)","name":"product"},{"description":"Review
+      information for a product","name":"review"},{"description":"Rating information
+      for a product","name":"rating"}]}'
+  servedBy:
+  - destinationSelector:
+      port:
+        number: 9080
+      selector:
+        cluster: cluster1
+        name: productpage
+        namespace: bookinfo-frontends
+```
+
+Note that you can create the APIDoc manually to allow you:
+* to provide the OpenAPI document as code
+* to declare an API running outside of Kubernetes (ExternalService)
+* to target a service running on a different cluster (VirtualDestination)
+
+We can now expose the API through Ingress Gateway using a RouteTable.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: productpage-api-v1
+  namespace: bookinfo-team
+  labels:
+    expose: "true"
+    portal-users: "true"
+    api: bookinfo
+spec:
+  portalMetadata:
+    title: BookInfo REST API v1
+    description: REST API for the Bookinfo application
+    apiProductId: bookinfo
+    apiProductDisplayName: BookInfo REST API
+    apiVersion: v1
+    customMetadata:
+      lifecyclePhase: "General Availability"
+  http:
+    - matchers:
+      - uri:
+          prefix: /api/bookinfo/v1
+      labels:
+        apikeys: "true"
+        ratelimited: "true"
+        api: "productpage"
+      forwardTo:
+        pathRewrite: /api/v1/products
+        destinations:
+          - ref:
+              name: productpage
+              namespace: bookinfo-frontends
+              cluster: web
+            port:
+              number: 9080
+EOF
+```
+
+You can see some labels set at the RouteTable and at the route level. We're going to take advantage of them later.
+The portalMetadata section will be used when we'll expose the API through the developer portal.
+You can think about this RouteTable as an API product. Also, note that we defined the version to be v1.
+You should now be able to access the API through the gateway without any authentication.
+
+```shell
+curl -k "https://web-bookinfo.example.com/api/bookinfo/v1"
+```
+
+Here is the expected output:
+
+```shell
+[{"id": 0, "title": "The Comedy of Errors", "descriptionHtml": "<a href=\"https://en.wikipedia.org/wiki/The_Comedy_of_Errors\">Wikipedia Summary</a>: The Comedy of Errors is one of <b>William Shakespeare's</b> early plays. It is his shortest and one of his most farcical comedies, with a major part of the humour coming from slapstick and mistaken identity, in addition to puns and word play."}]
+```
+
+You generally want to secure the access. Let's use API keys for that.
+
+You need to create an ExtAuthPolicy.
+```shell
+kubectl apply --context web -f - <<EOF
+apiVersion: security.policy.gloo.solo.io/v2
+kind: ExtAuthPolicy
+metadata:
+  name: bookinfo-apiauth
+  namespace: bookinfo-frontends
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        apikeys: "true"
+  config:
+    server:
+      name: ext-auth-server
+      namespace: gloo-platform-addons
+      cluster: web
+    glooAuth:
+      configs:
+        - apiKeyAuth:
+            headerName: api-key
+            headersFromMetadataEntry:
+              X-Solo-Plan:
+                name: usagePlan
+                required: true
+            k8sSecretApikeyStorage:
+              labelSelector:
+                auth: api-key
+EOF
+```
+
+The policy will be attached to our RouteTable due to the label apikeys: "true" we set in its route.
+
+Try to access the API without authentication.
+```shell
+curl -k "https://web-bookinfo.example.com/api/bookinfo/v1" -I
+```
+
+The access is refused (401 response)
+```shell
+HTTP/2 401
+www-authenticate: API key is missing or invalid
+date: Sun, 11 Feb 2024 15:46:51 GMT
+server: istio-envoy
+```
+
+Let's create an API key for a user user1.
+```shell
+export API_KEY_USER1=apikey1
+kubectl apply --context web -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: user1
+  namespace: bookinfo-frontends
+  labels:
+    auth: api-key
+type: extauth.solo.io/apikey
+stringData:
+  api-key: apikey1
+  user-id: user1
+  user-email: user1@solo.io
+  usagePlan: gold
+EOF
+```
+
+Now, you should be able to access the API using this API key.
+```shell
+curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v1"
+```
+
+We'll see later that the API keys can be created on demand by the end user through the developer portal (and stored on Redis for better scalability).
+
+So, we've secured the access to our API, but you generally want to limit the usage of your API.
+
+We're going to create 3 usage plans (bronze, silver and gold).
+
+The user user1 is a gold user (gold base64 is Z29sZA==).
+
+The X-Solo-Plan is created by the ExtAuthPolicy we have created earlier.
+
+Then, we need to create a RateLimitServerConfig object to define the limits based on the descriptors we will use later.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: admin.gloo.solo.io/v2
+kind: RateLimitServerConfig
+metadata:
+  name: productpage
+  namespace: bookinfo-team
+spec:
+  destinationServers:
+  - ref:
+      cluster: web
+      name: rate-limiter
+      namespace: gloo-platform-addons
+    port:
+      name: grpc
+  raw:
+    setDescriptors:
+      - simpleDescriptors:
+          - key: userId
+          - key: usagePlan
+            value: bronze
+        rateLimit:
+          requestsPerUnit: 1
+          unit: MINUTE
+      - simpleDescriptors:
+          - key: userId
+          - key: usagePlan
+            value: silver
+        rateLimit:
+          requestsPerUnit: 3
+          unit: MINUTE
+      - simpleDescriptors:
+          - key: userId
+          - key: usagePlan
+            value: gold
+        rateLimit:
+          requestsPerUnit: 5
+          unit: MINUTE
+EOF
+```
+
+It defines the limits for each plan.
+
+After that, we need to create a RateLimitPolicy to define the descriptors.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: trafficcontrol.policy.gloo.solo.io/v2
+kind: RateLimitPolicy
+metadata:
+  name: productpage
+  namespace: bookinfo-team
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        ratelimited: "true"
+  config:
+    serverSettings:
+      name: rate-limit-server
+      namespace: ops-team
+      cluster: mgmt
+    raw:
+      rateLimits:
+      - setActions:
+        - requestHeaders:
+            descriptorKey: usagePlan
+            headerName: X-Solo-Plan
+        - metadata:
+            descriptorKey: userId
+            metadataKey:
+              key: envoy.filters.http.ext_authz
+              path:
+                - key: userId
+    ratelimitServerConfig:
+      name: productpage
+      namespace: bookinfo-team
+      cluster: mgmt
+    phase:
+      postAuthz:
+        priority: 1
+
+EOF
+```
+
+This policy will be attached to our RouteTable due to the label ratelimited: "true" we set in its route.
+
+Try to access the API more than 5 times.
+```shell
+for i in `seq 1 10`; do curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v1" -I; done
+```
+
+You should be rate limited.
+```shell
+HTTP/2 429
+x-envoy-ratelimited: true
+date: Sun, 11 Feb 2024 15:52:41 GMT
+server: istio-envoy
+```

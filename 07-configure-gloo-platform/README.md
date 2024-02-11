@@ -146,7 +146,7 @@ spec:
   - workspaces:
     - name: ops-team
     resources:
-    - kind: SERVICE
+    - kind: ALL
   exportTo:
   - workspaces:
     - name: ops-team

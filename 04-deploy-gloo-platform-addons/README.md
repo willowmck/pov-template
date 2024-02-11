@@ -22,53 +22,34 @@ helm upgrade -i gloo-platform-addons gloo-platform/gloo-platform \
 kubectl get pods -n gloo-platform-addons --context web
 ```
 
-
 * Register the external authorization server with Gloo Platform
 ```shell
-kubectl create namespace ops-team --context mgmt
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context web -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: ExtAuthServer
 metadata:
   name: ext-auth-server
-  namespace: ops-team
+  namespace: gloo-platform-addons
 spec:
   destinationServer:
-    kind: VIRTUAL_DESTINATION
     port:
-      number: 8083
+      name: grpc
     ref:
-      cluster: mgmt
-      name: ext-auth-server-vd
-      namespace: ops-team
+      cluster: web
+      name: ext-auth-service
+      namespace: gloo-platform-addons
   requestBody: {}
----
-apiVersion: networking.gloo.solo.io/v2
-kind: VirtualDestination
-metadata:
-  name: ext-auth-server-vd
-  namespace: ops-team
-spec:
-  hosts:
-  - extauth.vdest.solo.io
-  ports:
-  - number: 8083
-    protocol: TCP
-  services:
-  - cluster: "web"
-    name: ext-auth-service
-    namespace: gloo-platform-addons
 EOF
 ```
 
 We also need to setup rate limiting for the usage plans
 ```shell
-kubectl apply --context mgmt -f - <<EOF
+kubectl apply --context web -f - <<EOF
 apiVersion: admin.gloo.solo.io/v2
 kind: RateLimitServerSettings
 metadata:
   name: rate-limit-server
-  namespace: ops-team
+  namespace: gloo-platform-addons
 spec:
   destinationServer:
     ref:
