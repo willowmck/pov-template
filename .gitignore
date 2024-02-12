@@ -2,3 +2,4 @@ tls.crt
 tls.key
 token
 ca.crt
+.DS_Store

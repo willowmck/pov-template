@@ -112,176 +112,10 @@ Then, using this ip address, modify your /etc/hosts file to map it to web-bookin
 
 You can access the productpage service using this URL - https://web-bookinfo.example.com/productpage.
 
-### Deploy Keycloak
-In many use cases, you need to restrict the access to your applications to authenticated users.
+### Deploy an IdP
+If you need to deploy a test IdP, you should do so in a VM or another cluster where there are fewer security restrictions.  See 00-keycloak lab for this information.
 
-OpenID Connect (OIDC) is an identity layer on top of the OAuth 2.0 protocol. In OAuth 2.0 flows, authentication is performed by an external Identity Provider (IdP) which, in case of success, returns an Access Token representing the user identity. The protocol does not define the contents and structure of the Access Token, which greatly reduces the portability of OAuth 2.0 implementations.
-
-The goal of OIDC is to address this ambiguity by additionally requiring Identity Providers to return a well-defined ID Token. OIDC ID tokens follow the JSON Web Token standard and contain specific fields that your applications can expect and handle. This standardization allows you to switch between Identity Providers – or support multiple ones at the same time – with minimal, if any, changes to your downstream services; it also allows you to consistently apply additional security measures like Role-Based Access Control (RBAC) based on the identity of your users, i.e. the contents of their ID token.
-
-In this lab, we're going to install Keycloak. It will allow us to setup OIDC workflows later.
-
-```shell
-kubectl apply --context web -f - <<EOF
-apiVersion: v1
-kind: Service
-metadata:
-  name: keycloak
-  namespace: gloo-platform-addons
-  labels:
-    app: keycloak
-spec:
-  ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
-  selector:
-    app: keycloak
-  type: ClusterIP
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: keycloak
-  namespace: gloo-platform-addons
-  labels:
-    app: keycloak
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: keycloak
-  template:
-    metadata:
-      labels:
-        app: keycloak
-    spec:
-      containers:
-      - name: keycloak
-        image: quay.io/keycloak/keycloak:22.0.5
-        args: ["start-dev"]
-        env:
-        - name: KEYCLOAK_ADMIN
-          value: "admin"
-        - name: KEYCLOAK_ADMIN_PASSWORD
-          value: "admin"
-        - name: PROXY_ADDRESS_FORWARDING
-          value: "true"
-        ports:
-        - name: http
-          containerPort: 8080
-        readinessProbe:
-          httpGet:
-            path: /realms/master
-            port: 8080
-EOF
-
-kubectl --context web -n gloo-platform-addons rollout status deploy/keycloak
-```
-
-Create a RouteTable for keycloak
-```shell
-kubectl apply --context mgmt -f - <<EOF
-apiVersion: networking.gloo.solo.io/v2
-kind: RouteTable
-metadata:
-  name: keycloak
-  namespace: ops-team
-spec:
-  hosts:
-    - web-keycloak.example.com
-  virtualGateways:
-    - name: ingress
-      namespace: ops-team
-      cluster: mgmt
-  workloadSelectors: []
-  http:
-    - name: keycloak
-      matchers:
-      - uri:
-          prefix: /
-      forwardTo:
-        destinations:
-          - ref:
-              name: keycloak
-              namespace: gloo-platform-addons
-              cluster: web
-            port:
-              number: 8080
-EOF
-```
-
-Once again, update /etc/hosts for web-keycloak.example.com
-
-Then, we will configure it and create two users:
-
-    User1 credentials: user1/password Email: user1@example.com
-
-    User2 credentials: user2/password Email: user2@solo.io
-
-Let's set the environment variables we need:
-```shell
-export KEYCLOAK_URL=https://web-keycloak.example.com
-```
-
-Now, we need to get a token:
-```shell
-export KEYCLOAK_TOKEN=$(curl -Ssm 10 -k --fail-with-body \
-  -d "client_id=admin-cli" \
-  -d "username=admin" \
-  -d "password=admin" \
-  -d "grant_type=password" \
-  "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" |
-  jq -r .access_token)
-```
-
-After that, we configure Keycloak:
-```shell
-# Create initial token to register the client
-read -r client token <<<$(curl -Ssm 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -d '{ "expiration": 0, "count": 1 }' \
-  $KEYCLOAK_URL/admin/realms/master/clients-initial-access |
-  jq -r '[.id, .token] | @tsv')
-KEYCLOAK_CLIENT=${client}
-
-# Register the client
-read -r id secret <<<$(curl -Ssm 10 -k --fail-with-body -H "Authorization: bearer ${token}" -H "Content-Type: application/json" \
-  -d '{ "clientId": "'${KEYCLOAK_CLIENT}'" }' \
-  ${KEYCLOAK_URL}/realms/master/clients-registrations/default |
-  jq -r '[.id, .secret] | @tsv')
-KEYCLOAK_SECRET=${secret}
-
-# Add allowed redirect URIs
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -X PUT -d '{ "serviceAccountsEnabled": true, "directAccessGrantsEnabled": true, "authorizationServicesEnabled": true, "redirectUris": ["'https://cluster1-httpbin.example.com'/*","'https://cluster1-portal.example.com'/*","'https://cluster1-backstage.example.com'/*"] }' \
-  ${KEYCLOAK_URL}/admin/realms/master/clients/${id}
-
-# Set access token lifetime to 30m (default is 1m)
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -X PUT -d '{ "accessTokenLifespan": 1800 }' \
-  ${KEYCLOAK_URL}/admin/realms/master
-
-# Add the group attribute in the JWT token returned by Keycloak
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -d '{ "name": "group", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper", "config": { "claim.name": "group", "jsonType.label": "String", "user.attribute": "group", "id.token.claim": "true", "access.token.claim": "true" } }' \
-  ${KEYCLOAK_URL}/admin/realms/master/clients/${id}/protocol-mappers/models
-
-# Add the show_personal_data attribute in the JWT token returned by Keycloak
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -d '{ "name": "show_personal_data", "protocol": "openid-connect", "protocolMapper": "oidc-usermodel-attribute-mapper", "config": { "claim.name": "show_personal_data", "jsonType.label": "String", "user.attribute": "show_personal_data", "id.token.claim": "true", "access.token.claim": "true"} } ' \
-  ${KEYCLOAK_URL}/admin/realms/master/clients/${id}/protocol-mappers/models
-
-# Create first user
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -d '{ "username": "user1", "email": "user1@example.com", "enabled": true, "attributes": { "group": "users" }, "credentials": [ { "type": "password", "value": "password", "temporary": false } ] }' \
-  ${KEYCLOAK_URL}/admin/realms/master/users
-
-# Create second user
-curl -m 10 -k --fail-with-body -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -H "Content-Type: application/json" \
-  -d '{ "username": "user2", "email": "user2@solo.io", "enabled": true, "attributes": { "group": "users", "show_personal_data": false }, "credentials": [ { "type": "password", "value": "password", "temporary": false } ] }' \
-  ${KEYCLOAK_URL}/admin/realms/master/users
-
-```
+Set the host url of your IdP to KEYCLOAK_URL.  We will use that env variable in our auth policy.
 
 ### Expose the productpage API securely
 Gloo Platform includes a developer portal, which is well integrated with its core API.
@@ -941,3 +775,472 @@ EOF
 All the users who will have a JWT token containing the claim group with the value users will have access to the APIs containing the label portal-users: "true".
 
 The RouteTable we have created for the bookinfo API has this label.
+
+### Deploy and expose the dev portal frontend
+The developer frontend is provided as a fully functional template to allow you to customize it based on your own requirements.
+
+Let's deploy it.
+```shell
+kubectl apply --context web -f - <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: portal-frontend
+  namespace: gloo-platform-addons
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-frontend
+  namespace: gloo-platform-addons
+  labels:
+    app: portal-frontend
+    service: portal-frontend
+spec:
+  ports:
+  - name: http
+    port: 4000
+    targetPort: 4000
+  selector:
+    app: portal-frontend
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-frontend
+  namespace: gloo-platform-addons
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portal-frontend
+  template:
+    metadata:
+      labels:
+        app: portal-frontend
+    spec:
+      serviceAccountName: portal-frontend
+      containers:
+      - image: djannot/portal-frontend:0.1
+        args: ["--host", "0.0.0.0"]
+        imagePullPolicy: Always
+        name: portal-frontend
+        ports:
+        - containerPort: 4000
+        readinessProbe:
+          httpGet:
+            path: /login
+            port: 4000
+        env:
+        - name: VITE_PORTAL_SERVER_URL
+          value: "https://web-portal.example.com/portal-server/v1"
+        - name: VITE_APPLIED_OIDC_AUTH_CODE_CONFIG
+          value: "true"
+        - name: VITE_OIDC_AUTH_CODE_CONFIG_CALLBACK_PATH
+          value: "/v1/login"
+        - name: VITE_OIDC_AUTH_CODE_CONFIG_LOGOUT_PATH
+          value: "/v1/logout"
+EOF
+```
+
+We can now expose the portal frontend through Ingress Gateway using a RouteTable.
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: portal-frontend
+  namespace: ops-team
+  labels:
+    expose: "true"
+    portal: "true"
+spec:
+  http:
+    - name: portal-frontend-auth
+      forwardTo:
+        destinations:
+          - port:
+              number: 4000
+            ref:
+              name: portal-frontend
+              namespace: gloo-platform-addons
+              cluster: web
+      labels:
+        oauth: "authorization-code"
+        route: portal-api
+      matchers:
+        - uri:
+            prefix: /v1/login
+        - uri:
+            prefix: /v1/logout
+    - name: portal-frontend-no-auth
+      matchers:
+      - uri:
+          prefix: /
+      forwardTo:
+        destinations:
+          - ref:
+              name: portal-frontend
+              namespace: gloo-platform-addons
+              cluster: web
+            port:
+              number: 4000
+EOF
+```
+
+You should now be able to access the portal frontend through the gateway.
+
+![Dev Portal Home](images/portal.png)
+
+If you click on the VIEW APIS button, you won't see any API because we haven't defined any public APIs.
+
+Get the URL to access the portal frontend using the following command.
+```shell
+echo "https://web-portal.example.com"
+```
+
+But we need to secure the access to the portal frontend.
+
+First, you need to create a Kubernetes Secret that contains the OIDC secret:
+```shell
+kubectl --context web apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oauth
+  namespace: gloo-platform-addons
+type: extauth.solo.io/oauth
+data:
+  client-secret: $(echo -n ${KEYCLOAK_SECRET} | base64)
+EOF
+```
+
+Then you need to create an ExtAuthPolicy.
+```shell
+kubectl apply --context web -f - <<EOF
+apiVersion: security.policy.gloo.solo.io/v2
+kind: ExtAuthPolicy
+metadata:
+  name: portal
+  namespace: gloo-platform-addons
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        oauth: "authorization-code"
+  config:
+    server:
+      name: ext-auth-server
+    glooAuth:
+      configs:
+      - oauth2:
+          oidcAuthorizationCode:
+            appUrl: "https://web-portal.example.com"
+            callbackPath: /v1/login
+            clientId: ${KEYCLOAK_CLIENT}
+            clientSecretRef:
+              name: oauth
+              namespace: gloo-platform-addons
+            issuerUrl: "${KEYCLOAK_URL}/realms/master/"
+            logoutPath: /v1/logout
+            session:
+              failOnFetchFailure: true
+              redis:
+                cookieName: keycloak-session
+                options:
+                  host: redis:6379
+            scopes:
+            - email
+            headers:
+              idTokenHeader: id_token
+EOF
+```
+
+Note that the ExtAuthPolicy is enforced on both the portal-frontend and portal-server RouteTables.
+
+If you click on the LOGIN button on the top right corner, you'll be redirected to keycloak and should be able to auth with the user user1 and the password password. Then you should be able to view the APIS.
+
+Finally, you need to create a CORS Policy to allow the portal frontend to send API calls the bookinfo API.
+
+```shell
+kubectl apply --context mgmt -f - <<EOF
+apiVersion: security.policy.gloo.solo.io/v2
+kind: CORSPolicy
+metadata:
+  name: productpage
+  namespace: bookinfo-team
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        api: "productpage"
+  config:
+    allowCredentials: true
+    allowHeaders:
+    - "*"
+    allowMethods:
+    - GET
+    allowOrigins:
+    - regex: ".*"
+EOF
+```
+
+### Allow users to create their own API keys
+In the previous steps, we've used Kubernetes secrets to store API keys and we've created them manually.
+
+In this steps, we're going to configure the developer portal to allow the user to create their API keys themselves and to store them on Redis (for better scalability and to support the multicluster use case).
+
+You need to update the ExtAuthPolicy (to remove the k8sSecretApikeyStorage block):
+```bash
+kubectl --context web apply -f - <<EOF
+apiVersion: security.policy.gloo.solo.io/v2
+kind: ExtAuthPolicy
+metadata:
+  name: bookinfo-apiauth
+  namespace: bookinfo-frontends
+spec:
+  applyToRoutes:
+  - route:
+      labels:
+        apikeys: "true"
+  config:
+    server:
+      name: ext-auth-server
+      namespace: gloo-platform-addons
+      cluster: web
+    glooAuth:
+      configs:
+        - apiKeyAuth:
+            headerName: api-key
+            headersFromMetadataEntry:
+              X-Solo-Plan:
+                name: usagePlan
+                required: true
+EOF
+```
+Then, you can open the drop down menu by clicking on user1 on the top right corner and select API Keys.
+As you can see, you have access to the Gold plan and can create an API key for it. Click on the +ADD KEY button.
+
+Give it a name and click on GENERATE KEY.
+Copy the key. If you don't do that, you won't be able to see it again. You'll need to create a new one.
+
+You can now use the key to try out the API.
+
+You'll need to use the Swagger View and then to click on the Authorize button to paste your API key.
+
+Before we continue, let's update the API_KEY_USER1 variable with its current value:
+```shell
+export API_KEY_USER1=$(curl -k -s -X POST -H 'Content-Type: application/json' -d '{"usagePlan": "gold", "apiKeyName": "key1"}' -H "Cookie: ${USER1_TOKEN}" "https://web-portal.example.com/portal-server/v1/api-keys"  | jq -r '.apiKey')
+echo API key: $API_KEY_USER1
+```
+
+### Dev Portal Monetization
+The recommended way to monetize your API is to leverage the usage plans we've defined in the previous labs.
+
+In that case, you don't need to measure how many calls are sent by each user.
+
+But if you requires fine grained monetization, we can deliver this as well.
+
+The portalMetadata section of the RouteTable we've created previously is used to add some metadata in the access logs.
+
+You can configure the access logs to take advantage of the metadata:
+```bash
+kubectl apply --context web -f - <<EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: ingressgateway-access-logging
+  namespace: istio-system
+spec:
+  workloadSelector:
+    labels:
+      app: gloo-gateway
+  configPatches:
+  - applyTo: NETWORK_FILTER
+    match:
+      context: GATEWAY
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: MERGE
+      value:
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+          access_log:
+          - name: envoy.access_loggers.file
+            typed_config:
+              "@type": "type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog"
+              path: /dev/stdout
+              log_format:
+                json_format:
+                  "timestamp": "%START_TIME%"
+                  "server_name": "%REQ(:AUTHORITY)%"
+                  "response_duration": "%DURATION%"
+                  "request_command": "%REQ(:METHOD)%"
+                  "request_uri": "%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%"
+                  "request_protocol": "%PROTOCOL%"
+                  "status_code": "%RESPONSE_CODE%"
+                  "client_address": "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%"
+                  "x_forwarded_for": "%REQ(X-FORWARDED-FOR)%"
+                  "bytes_sent": "%BYTES_SENT%"
+                  "bytes_received": "%BYTES_RECEIVED%"
+                  "user_agent": "%REQ(USER-AGENT)%"
+                  "downstream_local_address": "%DOWNSTREAM_LOCAL_ADDRESS%"
+                  "requested_server_name": "%REQUESTED_SERVER_NAME%"
+                  "request_id": "%REQ(X-REQUEST-ID)%"
+                  "response_flags": "%RESPONSE_FLAGS%"
+                  "route_name": "%ROUTE_NAME%"
+                  "upstream_cluster": "%UPSTREAM_CLUSTER%"
+                  "upstream_host": "%UPSTREAM_HOST%"
+                  "upstream_local_address": "%UPSTREAM_LOCAL_ADDRESS%"
+                  "upstream_service_time": "%REQ(x-envoy-upstream-service-time)%"
+                  "upstream_transport_failure_reason": "%UPSTREAM_TRANSPORT_FAILURE_REASON%"
+                  "correlation_id": "%REQ(X-CORRELATION-ID)%"
+                  "user_id": "%DYNAMIC_METADATA(envoy.filters.http.ext_authz:userId)%"
+                  "api_id": "%DYNAMIC_METADATA(io.solo.gloo.apimanagement:api_id)%"
+                  "api_product_id": "%DYNAMIC_METADATA(io.solo.gloo.apimanagement:api_product_id)%"
+                  "api_product_name": "%DYNAMIC_METADATA(io.solo.gloo.apimanagement:api_product_name)%"
+                  "usage_plan": "%DYNAMIC_METADATA(envoy.filters.http.ext_authz:usagePlan)%"
+                  "custom_metadata": "%DYNAMIC_METADATA(io.solo.gloo.apimanagement:custom_metadata)%"
+EOF
+```
+Note that you can also configure the access logs when deploying Istio with the IstioLifecycleManager object.
+
+After that, you can send an API call:
+```shell
+curl -k -H "api-key: ${API_KEY_USER1}" "https://web-bookinfo.example.com/api/bookinfo/v1"
+```
+
+Now, let's check the logs of the Istio Ingress Gateway:
+```shell
+kubectl --context web -n istio-ingress logs -l app=gloo-gateway --tail 1 | jq .
+```
+You should get an output similar to this:
+```shell
+{
+  "request_id": "3abec177-32fe-90d1-a448-06912e45ff6d",
+  "custom_metadata": null,
+  "usage_plan": "gold",
+  "upstream_local_address": "100.64.17.177:41428",
+  "upstream_cluster": "outbound|9080||productpage.bookinfo-frontends.svc.cluster.local",
+  "requested_server_name": "web-bookinfo.example.com",
+  "request_command": "GET",
+  "timestamp": "2024-02-12T16:15:54.624Z",
+  "api_product_name": "BookInfo REST API",
+  "response_flags": "-",
+  "downstream_local_address": "100.64.17.177:8443",
+  "route_name": "insecure-unnamed-0-productpage-api-v1.bookinfo-team.mgmt--main-bookinfo.ops-team.mgmt",
+  "upstream_service_time": null,
+  "upstream_transport_failure_reason": null,
+  "api_product_id": "bookinfo",
+  "bytes_received": 0,
+  "upstream_host": "100.64.21.171:9080",
+  "user_id": "user1@example.com",
+  "response_duration": 31,
+  "api_id": "bookinfo-v1",
+  "status_code": 200,
+  "x_forwarded_for": "100.64.37.63",
+  "client_address": "100.64.37.63",
+  "request_protocol": "HTTP/2",
+  "server_name": "web-bookinfo.example.com",
+  "request_uri": "/api/bookinfo/v1",
+  "bytes_sent": 395,
+  "correlation_id": null,
+  "user_agent": "curl/8.4.0"
+}
+```
+
+You can see several key information you can use for monetization purpose:
+
+    the API name
+    the usage plan
+    they user identity
+    the customer metadata
+    and everything about the request (method, path, status)
+
+You can gather and process these access logs on your own, but Gloo Platform can also collect them through its open telemetry pipeline and store them in a ClickHouse database.
+
+This has already been configured when we deployed the different Gloo Platform components.
+
+To visualize the information we've ingested, we need to deploy Grafana.
+```bash
+kubectl --context mgmt -n gloo-mesh create cm portal-api-analytics \
+--from-file=data/portal-api-analytics.json
+
+kubectl apply --context mgmt -f- <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana
+  namespace: gloo-mesh
+stringData:
+  admin-user: admin
+  admin-password: password
+type: Opaque
+EOF
+
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm upgrade --install grafana \
+grafana/grafana \
+--kube-context mgmt \
+--version 6.58.7 \
+--namespace gloo-mesh \
+--create-namespace \
+--values - <<EOF
+admin:
+  existingSecret: grafana
+service:
+  port: 3000
+  type: LoadBalancer
+plugins:
+- grafana-clickhouse-datasource
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: ClickHouse
+      type: grafana-clickhouse-datasource
+      isDefault: false
+      uid: clickhouse-access-logs
+      jsonData:
+        defaultDatabase: default
+        port: 9000
+        server: clickhouse.gloo-mesh
+        username: default
+        tlsSkipVerify: true
+      secureJsonData:
+        password: password
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: "clickhouse"
+        orgId: 1
+        folder: "clickhouse"
+        type: file
+        disableDeletion: false
+        options:
+          path: /var/lib/grafana/dashboards/clickhouse
+dashboardsConfigMaps:
+  clickhouse: portal-api-analytics
+defaultDashboardsEnabled: false
+grafana.ini:
+  auth.anonymous:
+    enabled: true
+EOF
+kubectl --context mgmt -n gloo-mesh rollout status deployment grafana
+```
+
+Get the URL to access Grafana the following command:
+```bash
+echo "http://$(kubectl --context mgmt -n gloo-mesh get svc grafana -o jsonpath='{.status.loadBalancer.ingress[*].ip}')"
+```
+
+Login with the user admin and the password password.
+
+Open the API dashboard.
+
+Thanks for exploring the Portal!

@@ -20,6 +20,6 @@ extAuthService:
       name: redis
       enabled: true 
       config:
-        connections:
+        connection:
           host: redis.gloo-platform-addons:6379
       secretKey: ThisIsSecret
